@@ -1,0 +1,8 @@
+{
+  "name": "New Concept English Medium High School",
+  "description": "Premium educational institution website for New Concept English Medium High School, Baheda, Nepal. Designed by TechMind IT Solution.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
