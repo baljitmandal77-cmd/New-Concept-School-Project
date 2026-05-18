@@ -16,6 +16,11 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import logoUrl from './assets/images/school_logo_minimalist_1779109493110.png';
+import heroBannerUrl from './assets/images/school_hero_banner_1779108511571.png';
+import uniqueFeatureUrl from './assets/images/regenerated_image_1779108373950.jpg';
+import principalPortraitUrl from './assets/images/regenerated_image_1779108859642.jpg';
+
 /** Utility for Tailwind classes */
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -23,7 +28,7 @@ function cn(...inputs: ClassValue[]) {
 
 // --- SHARED COMPONENTS ---
 
-const LOGO_URL = "https://images.unsplash.com/photo-1594608661623-aa0bd3a67d28?q=80&w=200&h=200&auto=format&fit=crop";
+const LOGO_URL = logoUrl;
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,12 +50,13 @@ const Header = () => {
       <div className="bg-primary text-white py-2 hidden md:block border-b border-white/10">
         <div className="container mx-auto px-4 flex justify-between items-center text-[11px] font-bold uppercase tracking-widest">
           <div className="flex items-center space-x-6">
-            <span className="flex items-center gap-2"><Phone size={12} className="text-accent" /> +977-9800000000</span>
+            <span className="flex items-center gap-2"><Phone size={12} className="text-accent" /> +977-9817681582</span>
+            <span className="flex items-center gap-2"><Phone size={12} className="text-accent" /> +977-9801671714</span>
             <span className="flex items-center gap-2"><Mail size={12} className="text-accent" /> admissions@ncemhs.edu.np</span>
-            <span className="flex items-center gap-2"><MapPin size={12} className="text-accent" /> Baheda, Mahottari</span>
+            <span className="flex items-center gap-2"><MapPin size={12} className="text-accent" /> Baheda, Ekdara-5 Mahottari</span>
           </div>
           <div className="flex items-center space-x-4">
-            <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-facebook-f"></i></a>
+            <a href="https://web.facebook.com/profile.php?id=61551887493888" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-facebook-f"></i></a>
             <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-instagram"></i></a>
             <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-youtube"></i></a>
             <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-tiktok"></i></a>
@@ -59,15 +65,46 @@ const Header = () => {
       </div>
 
       {/* Main Navbar */}
-      <nav className="bg-white/95 backdrop-blur-xl shadow-lg border-b sticky top-0 py-2 transition-all">
-        <div className="container mx-auto px-4 flex justify-between items-center">
+      <nav className="bg-white/95 backdrop-blur-xl shadow-lg border-none sticky top-0 py-2 transition-all">
+        <div className="container mx-auto px-4 flex justify-between items-center border-none">
           <Link to="/" className="flex items-center gap-3 md:gap-4 group">
-            <div className="w-16 h-16 md:w-28 md:h-28 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-premium group-hover:scale-105 transition-transform shrink-0 border border-black/5">
-              <img src={LOGO_URL} alt="NC Logo" className="w-full h-full object-cover" />
+            <div className="w-16 h-16 md:w-28 md:h-28 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
+              <img src={LOGO_URL} alt="School Logo" className="w-full h-full object-contain mix-blend-multiply" />
             </div>
             <div className="block">
-              <h1 className="text-primary font-black text-xl md:text-3xl leading-none uppercase tracking-tighter">New Concept</h1>
-              <p className="text-accent text-[8px] md:text-xs font-black uppercase tracking-[0.25em] mt-1 italic">Knowledge & Discipline</p>
+              <h1 
+                className="text-primary font-black uppercase tracking-tighter" 
+                style={{ 
+                  paddingLeft: '7px', 
+                  width: '164.677px', 
+                  height: '35.0035px', 
+                  fontSize: '22px', 
+                  fontStyle: 'normal', 
+                  marginLeft: '19px',
+                  lineHeight: 'none'
+                }}
+              >
+                New Concept
+              </h1>
+              <p 
+                className="uppercase tracking-[0.25em] drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)] drop-shadow-[0_2px_4px_rgba(0,0,0,1)]" 
+                style={{ 
+                  color: '#000000',
+                  paddingLeft: '-3px',
+                  fontSize: '12px',
+                  lineHeight: '12.5px',
+                  textDecorationLine: 'none',
+                  fontFamily: 'Times New Roman',
+                  marginTop: '-4px',
+                  width: '234.438px',
+                  height: '16.4861px',
+                  borderColor: '#0e04ff',
+                  fontWeight: 'bold',
+                  borderStyle: 'none'
+                }}
+              >
+                English Medium School
+              </p>
             </div>
           </Link>
 
@@ -117,8 +154,8 @@ const Header = () => {
               className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[70] shadow-2xl p-8 overflow-y-auto"
             >
               <div className="flex justify-between items-center mb-12">
-                <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-lg border">
-                  <img src={LOGO_URL} alt="NC Logo" className="w-full h-full object-cover" />
+                <div className="w-20 h-20 flex items-center justify-center overflow-hidden scale-110">
+                  <img src={LOGO_URL} alt="School Logo" className="w-full h-full object-contain mix-blend-multiply" />
                 </div>
                 <button onClick={() => setIsOpen(false)} className="p-3 bg-light-bg rounded-xl hover:bg-accent transition-colors">
                   <X size={20} />
@@ -145,10 +182,11 @@ const Header = () => {
                 </div>
               </div>
               <div className="mt-20 pt-8 border-t">
-                <p className="text-[10px] font-bold text-primary/40 uppercase tracking-widest mb-4">Official Helpdesk</p>
+                <p className="text-[10px] font-bold text-primary/40 uppercase tracking-widest mb-4"></p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-sm font-bold text-primary">
-                    <Phone size={16} className="text-accent" /> +977-9800000000
+                    <Phone size={16} className="text-accent" /> +977-9817681582
+                    <Phone size={16} className="text-accent" /> +977-9801671714
                   </div>
                   <div className="flex items-center gap-3 text-sm font-bold text-primary">
                     <Mail size={16} className="text-accent" /> info@ncemhs.edu.np
@@ -180,22 +218,26 @@ const Footer = () => {
     <footer className="bg-primary text-white pt-24 border-t-8 border-accent">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 pb-16">
         <div className="space-y-8">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-xl border-2 border-white/20">
-              <img src={LOGO_URL} alt="NC Logo" className="w-full h-full object-cover" />
+          <div className="flex items-center gap-6">
+            <div className="w-80 h-80 flex items-center justify-center overflow-hidden">
+              <img src={LOGO_URL} alt="School Logo" className="w-full h-full object-contain invert mix-blend-screen opacity-95" />
             </div>
             <div>
               <h3 className="font-black text-2xl uppercase tracking-tighter">New Concept</h3>
-              <p className="text-accent text-[10px] font-bold uppercase tracking-[0.3em]">Institutional Hub</p>
+              <p className="text-accent text-[10px] font-bold uppercase tracking-[0.3em]">K.D. Sir's Excellence Hub</p>
             </div>
           </div>
           <p className="text-white/50 text-sm leading-relaxed">
-            The most trusted name in basic level education in Mahottari. We nurture the seeds of tomorrow with modern technology and ancient values.
+            The most trusted name in basic level education in Mahottari. Widely recognized as K.D. Sir's School, we nurture the seeds of tomorrow with modern technology and ancient values.
           </p>
           <div className="flex gap-4">
-             {[Facebook, Youtube, Instagram].map((Icon, i) => (
-               <a key={i} href="#" className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-accent hover:text-primary hover:-translate-y-1 transition-all">
-                 <Icon size={20} />
+             {[
+               { Icon: Facebook, url: "https://web.facebook.com/profile.php?id=61551887493888" },
+               { Icon: Youtube, url: "#" },
+               { Icon: Instagram, url: "#" }
+             ].map((social, i) => (
+               <a key={i} href={social.url} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-accent hover:text-primary hover:-translate-y-1 transition-all">
+                 <social.Icon size={20} />
                </a>
              ))}
           </div>
@@ -217,11 +259,11 @@ const Footer = () => {
           <ul className="space-y-6 text-sm font-bold text-white/70">
             <li className="flex gap-4">
               <MapPin size={22} className="text-accent shrink-0" />
-              <span className="leading-relaxed">Baheda, Ekdara-05, Mahottari, Madhesh Nepal</span>
+              <span className="leading-relaxed">Baheda, Ekdara-5, Mahottari, Madhesh Nepal</span>
             </li>
             <li className="flex gap-4">
               <Phone size={22} className="text-accent shrink-0" />
-              <span>+977-9800000000<br />+977-9811111111</span>
+              <span>+977-9801671714<br />+977-9817681582</span>
             </li>
             <li className="flex gap-4">
               <Mail size={22} className="text-accent shrink-0" />
@@ -231,7 +273,7 @@ const Footer = () => {
         </div>
 
         <div className="bg-white/5 p-8 rounded-[40px] border border-white/10">
-          <h4 className="text-accent font-black uppercase tracking-[0.2em] mb-6 text-xs italic">School Mobile App</h4>
+          <h4 className="text-accent font-black uppercase tracking-[0.2em] mb-6 text-xs italic">School Mobile App COMING SOON!</h4>
           <p className="text-xs text-white/40 mb-8 leading-relaxed font-semibold">Get daily homework, attendance, and fee alerts on your smartphone.</p>
           <div className="space-y-4">
             <button className="w-full bg-white text-primary flex items-center justify-center gap-3 py-3.5 rounded-2xl font-black text-[13px] uppercase tracking-widest hover:bg-accent transition-colors">
@@ -246,9 +288,9 @@ const Footer = () => {
 
       <div className="bg-black/40 py-6">
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-[10px] text-white/30 gap-6">
-          <p className="font-bold tracking-widest uppercase">&copy; {new Date().getFullYear()} NEW CONCEPT ENGLISH MEDIUM HIGH SCHOOL. INSTITUTIONAL PRIDE.</p>
+          <p className="font-bold tracking-widest uppercase">&copy; {new Date().getFullYear()} NEW CONCEPT ENGLISH MEDIUM SCHOOL. EDUCATIONAL PRIDE.</p>
           <p className="font-black tracking-[0.2em] uppercase bg-white/5 px-4 py-2 rounded-lg">
-            Developed & Powered by: <a href="http://www.baljitmandal.com.np" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline decoration-accent/30 decoration-2 transition-all">Baljit Mandal (TechMind IT Solution)</a>
+            Developed & Powered by: <a href="https://www.baljitmandal.com.np" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline decoration-accent/30 decoration-2 transition-all">Baljit Mandal (TechMind IT Solution)</a>
           </p>
         </div>
       </div>
@@ -263,9 +305,9 @@ const Home = () => {
       {/* Emergency ticker */}
       <div className="bg-red-600 text-white py-3 relative overflow-hidden whitespace-nowrap z-40">
         <div className="flex gap-16 animate-ticker font-black text-[11px] uppercase tracking-[0.2em]">
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> NEW ADMISSIONS 2026-27 STARTING FROM MAY 20TH. LIMITED SCHOLARSHIP SLOTS!</span>
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> PARENT-TEACHER CONFERENCE SCHEDULED FOR JUNE 5TH.</span>
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> FIRST TERM EXAMINATION RESULTS PUBLISHED FOR CLASSES 1-5.</span>
+          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> New Admission Started for 2083 Session. Limited Scholarship Slots.</span>
+          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> !!Admission Open!!</span>
+          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> !!Admission Now!!</span>
         </div>
       </div>
 
@@ -273,7 +315,7 @@ const Home = () => {
       <section className="relative min-h-[90vh] lg:h-[95vh] flex items-center overflow-hidden bg-primary py-20 lg:py-0">
          <div className="absolute inset-0 z-0">
            <img 
-            src="https://images.unsplash.com/photo-1577891746234-cbe4e60ca218?q=80&w=2070&auto=format&fit=crop" 
+            src={heroBannerUrl} 
             className="w-full h-full object-cover opacity-30 mix-blend-luminosity scale-105" 
             alt="School Banner"
            />
@@ -289,7 +331,7 @@ const Home = () => {
            >
              <div className="flex items-center gap-4 mb-10">
                <span className="h-[2px] w-12 bg-accent"></span>
-               <span className="text-accent font-black uppercase tracking-[0.4em] text-[11px]">Mahottari's Educational Beacon</span>
+               <span className="text-accent font-black uppercase tracking-[0.4em] text-[11px]">Ekdara's Top English Medium Hub</span>
              </div>
              <h1 className="text-4xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter mb-10">
                Empowering <br />
@@ -308,36 +350,39 @@ const Home = () => {
              </div>
            </motion.div>
          </div>
+      </section>
 
-         {/* Hero Info Cards */}
-         <div className="absolute bottom-0 right-0 left-0 hidden lg:block">
-           <div className="container mx-auto px-4 grid grid-cols-3 gap-8 mb-16">
+       {/* Hero Info Cards - Separated to prevent overlap */}
+       <section className="bg-primary pb-20 -mt-1 relative z-20">
+         <div className="container mx-auto px-4">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
              {[
-               { icon: <Shield size={24} />, title: "Secure Campus", desc: "24/7 CCTV & Security Monitoring" },
+               { icon: <Shield size={24} />, title: "Secure School", desc: "24/7 CCTV & Security Monitoring" },
                { icon: <Sparkles size={24} />, title: "Smart Classes", desc: "Interactive Audiovisual Education" },
-               { icon: <Users size={24} />, title: "Expert Teachers", desc: "1:20 Teacher-Student Ratio" }
+               { icon: <Users size={24} />, title: "Expert Teachers", desc: "1:10 Teacher-Student Ratio" }
              ].map((card, i) => (
                <motion.div 
                  key={i}
-                 initial={{ opacity: 0, y: 30 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.5 + i * 0.2 }}
-                 className="bg-white/10 backdrop-blur-3xl p-8 rounded-[40px] border border-white/10"
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: i * 0.15 }}
+                 className="bg-white/5 backdrop-blur-3xl p-8 md:p-10 rounded-[40px] border border-white/10 hover:bg-white/10 transition-all group"
                >
-                 <div className="text-accent mb-6">{card.icon}</div>
-                 <h4 className="text-white font-bold text-xl mb-2">{card.title}</h4>
-                 <p className="text-white/40 text-sm font-semibold">{card.desc}</p>
+                 <div className="text-accent mb-6 group-hover:scale-110 transition-transform">{card.icon}</div>
+                 <h4 className="text-white font-black text-xl md:text-2xl mb-3 tracking-tight italic">{card.title}</h4>
+                 <p className="text-white/40 text-sm font-semibold leading-relaxed">{card.desc}</p>
                </motion.div>
              ))}
            </div>
          </div>
-      </section>
+       </section>
 
-      {/* Featured visual section: Why Choose Us */}
+       {/* Featured visual section: Why Choose Us */}
       <section className="py-20 md:py-32 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4">
           <SectionHeader 
-            badge="Institutional Strength"
+            badge="EDUCATIONAL STRENGTH"
             title="Why New Concept is Unique"
             desc="We don't just teach subjects; we architect futures with a blend of regional values and global innovation."
             centered
@@ -346,14 +391,14 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             {[
               {
-                img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2132&auto=format&fit=crop",
+                img: uniqueFeatureUrl,
                 title: "Holistic Environment",
-                desc: "Our campus is designed to inspire creativity, with open spaces and modern classrooms."
+                desc: "Our School is designed to inspire creativity, with open spaces and modern courses."
               },
               {
                 img: "https://images.unsplash.com/photo-1560523182-7ea90df18903?q=80&w=2070&auto=format&fit=crop",
                 title: "Tech-Infused Learning",
-                desc: "Students use tablets and smart boards to grasp complex concepts through visualization."
+                desc: "Students use computer and smart boards to grasp complex concepts through visualization."
               },
               {
                 img: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2040&auto=format&fit=crop",
@@ -418,12 +463,12 @@ const Home = () => {
              <div className="relative">
                <div className="aspect-square bg-white/10 rounded-3xl md:rounded-[40px] overflow-hidden border border-white/10 relative p-3 md:p-4 group">
                  <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" 
+                  src={principalPortraitUrl} 
                   className="w-full h-full object-cover rounded-2xl md:rounded-[30px] group-hover:scale-105 transition-all duration-700" 
                   alt="Principal" 
                  />
                  <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 p-5 md:p-8 bg-black/60 backdrop-blur-md rounded-2xl md:rounded-3xl border border-white/10">
-                    <h3 className="text-xl md:text-2xl font-black mb-1">Mr. Ram Dev Mandal</h3>
+                    <h3 className="text-xl md:text-2xl font-black mb-1" style={{ color: '#0a7aff' }}>Mr. Kaushlendra Giri</h3>
                     <p className="text-accent text-[9px] md:text-[10px] font-black uppercase tracking-widest">Academic Excellence Lead</p>
                  </div>
                </div>
@@ -470,7 +515,7 @@ const Admissions = () => {
             <section className="bg-primary pt-24 pb-48 text-white text-center relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <span className="bg-accent text-primary px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 inline-block shadow-xl">Academic Intake 2026-27</span>
+                        <span className="bg-accent text-primary px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 inline-block shadow-xl">Academic Intake 2083</span>
                         <h1 className="text-4xl md:text-8xl font-black mb-8 tracking-tighter uppercase leading-[0.9]">Secure Their <br /><span className="text-white/40 italic">Future Growth.</span></h1>
                         <p className="text-white/60 max-w-xl mx-auto text-base md:text-lg mb-12">Submit your inquiry today to join the most competitive basic-level institutional community in Mahottari.</p>
                     </motion.div>
@@ -541,7 +586,7 @@ const Admissions = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Student Full Name</label>
-                                            <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="e.g. Rahul Kumar Saf" required />
+                                            <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="e.g. Rahul Kumar Shah" required />
                                         </div>
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Target Class</label>
@@ -556,13 +601,13 @@ const Admissions = () => {
                                             <input type="tel" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="+977-XXXXXXXXXX" required />
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Residential District</label>
-                                            <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="e.g. Mahottari" required />
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Address</label>
+                                            <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="e.g. Baheda, Ekdara" required />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Previous Institution (If Any)</label>
-                                        <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="School name / Self-study" />
+                                        <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="Previous School name / Self-study" />
                                     </div>
                                     <button className="w-full bg-primary text-white py-7 rounded-3xl font-black uppercase tracking-widest text-sm shadow-deep hover:bg-black transition-all flex items-center justify-center gap-4">
                                         Validate & Submit Inquiry <ArrowRight className="text-accent" />
@@ -683,20 +728,18 @@ const Gallery = () => {
                                 key={i}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
-                                className="group bg-white rounded-[40px] overflow-hidden shadow-premium border border-light-bg"
+                                className="group relative h-[450px] rounded-[40px] md:rounded-[50px] overflow-hidden shadow-premium border border-light-bg"
                             >
-                                <div className="aspect-video relative overflow-hidden">
-                                     <img src={item.src} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                                     <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-                                         <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-primary group-hover:rotate-12 transition-transform">
-                                            <Camera size={20} />
-                                         </div>
-                                     </div>
-                                </div>
-                                <div className="p-10">
-                                    <h4 className="text-2xl font-black text-primary mb-4 italic tracking-tight">{item.title}</h4>
-                                    <p className="text-primary/60 text-sm leading-relaxed font-medium">{item.desc}</p>
-                                </div>
+                                 <img src={item.src} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                 <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/30 to-transparent opacity-90 transition-opacity"></div>
+                                 
+                                 <div className="absolute inset-x-0 bottom-0 p-8 md:p-10">
+                                    <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-primary mb-6 shadow-xl group-hover:rotate-12 transition-transform">
+                                        <Camera size={24} />
+                                    </div>
+                                    <h4 className="text-2xl font-black text-white mb-4 italic tracking-tight">{item.title}</h4>
+                                    <p className="text-white/60 text-sm leading-relaxed font-medium">{item.desc}</p>
+                                 </div>
                             </motion.div>
                         ))}
                     </div>
@@ -713,7 +756,7 @@ const About = () => {
              <section className="bg-primary py-24 text-white relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
                     <h1 className="text-4xl md:text-8xl font-black mb-8 tracking-tighter uppercase italic leading-[0.9]">Legacy Of <br /><span className="text-accent underline decoration-white/10 decoration-8 underline-offset-10">Excellence.</span></h1>
-                    <p className="text-white/60 max-w-2xl text-base md:text-lg font-medium leading-relaxed">Defining the standards of education in Mahottari since 2012 with a vision beyond classrooms.</p>
+                    <p className="text-white/60 max-w-2xl text-base md:text-lg font-medium leading-relaxed">Defining the standards of education in Mahottari since 2071 with a vision beyond classrooms.</p>
                 </div>
                 <div className="absolute inset-0 bg-primary/40 z-0">
                   <img src="https://images.unsplash.com/photo-1541339907198-e08759df9a13?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover opacity-20 mix-blend-overlay" alt="About BG" />
@@ -728,10 +771,10 @@ const About = () => {
                             title="Nurturing Roots, Growing Wings."
                         />
                         <div className="space-y-8 text-primary/60 text-lg leading-relaxed">
-                            <p>Founded on the principles of academic rigor and moral integrity, New Concept English Medium High School has stood as a bastion of quality for over a decade. We began with a handful of students and a mountain of resolve.</p>
+                            <p>Founded on the principles of academic rigor and moral integrity, New Concept English Medium School has stood as a bastion of quality for over a decade. We began with a handful of students and a mountain of resolve.</p>
                             <div className="grid grid-cols-2 gap-8 py-8 border-y">
                                 <div className="space-y-2">
-                                    <div className="text-3xl font-black text-primary italic tracking-tighter">14+ Years</div>
+                                    <div className="text-3xl font-black text-primary italic tracking-tighter">13+ Years</div>
                                     <p className="text-xs font-black uppercase tracking-widest text-accent">Pedagogical Experience</p>
                                 </div>
                                 <div className="space-y-2">
@@ -771,7 +814,7 @@ const About = () => {
                         {[
                             { name: "Sita Kumari Sah", role: "Primary Coordinator", qual: "M.Ed in English", desc: "With 12 years of experience, she leads the linguistic foundation of our young scholars with passion.", img: "https://images.unsplash.com/photo-1544717297-fa15739a5447?q=80&w=2070&auto=format&fit=crop" },
                             { name: "Pukar Mandal", role: "Sr. Administrator", qual: "MBA (Human Resources)", desc: "The operational backbone of New Concept, ensuring seamless academic management and student support.", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop" },
-                            { name: "Ram Mandal", role: "Principal", qual: "M.A. (Ed. Admin)", desc: "A visionary leader focus on character building and institutional discipline.", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" },
+                            { name: "K.D Sir", role: "Principal", qual: "M.A. (Ed. Admin)", desc: "A visionary leader focus on character building and institutional discipline.", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" },
                             { name: "Anish Gupta", role: "ICT Instructor", qual: "B.Tech in CS", desc: "Bridging the gap between traditional learning and modern technology for our students.", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop" },
                             { name: "Sunita Yadav", role: "Early Childhood Lead", qual: "B.Ed (Child Psych)", desc: "Specializes in play-based learning and cognitive development for Nursery students.", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" },
                             { name: "Kavi Raj Jha", role: "Mathematics Dept.", qual: "M.Sc in Applied Math", desc: "Simplifying complex numbers into fun challenges for primary grade students.", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop" }
@@ -810,22 +853,22 @@ const Notices = () => {
 
     const notices = [
         { 
-            date: "Oct 24, 2026", 
-            title: "Terminal Exam Schedule Published", 
-            cat: "Exams",
-            desc: "The comprehensive examination schedule for the academic term 2026-27 has been finalized. All students are advised to check their respective subjects and timings carefully. Admit cards will be distributed from the administrative office starting next Monday. Please ensure all outstanding fees are cleared before collection."
+            date: "Baisakh 11, 2083", 
+            title: "Addmission Open Now", 
+            cat: "Enrollment",
+            desc: "Admit your child to become Young Mindset & Also Scholarship Available for poor family background. We care every child and Family."
         },
         { 
-            date: "Oct 20, 2026", 
-            title: "Annual Science Fair Guidelines", 
-            cat: "Events",
-            desc: "Join us for the Annual Science Fair! Students from Grade 3-5 are invited to showcase their innovative projects. Participants must submit their project abstracts by the end of this week. The fair will be attended by guest educators from the district. Winning entries will receive special institutional awards and certificates of excellence."
+            date: "Ashar, 2083", 
+            title: "First Term Exam", 
+            cat: "Test",
+            desc: "First Terminal Examination, first we test students weakness and then guide them by their performance. We track Student Activities & performance."
         },
         { 
-            date: "Oct 15, 2026", 
+            date: "Kartik 10, 2083", 
             title: "Holiday Announcement - Dashain Festival", 
             cat: "Urgent",
-            desc: "In observance of the Dashain Festival, the school will remain closed for one week starting from October 18th. We wish all our students, teachers, and their families a joyous and safe festival season filled with prosperity. Classes will resume following the standard timetable on October 26th."
+            desc: "In observance of the Dashain Festival, the school will remain closed for one week starting from Kartik 10th. We wish all our students, teachers, and their families a joyous and safe festival season filled with prosperity. Classes will resume following the standard timetable on Kartik 17th."
         }
     ];
 
@@ -956,7 +999,7 @@ const Contact = () => {
                             <div className="w-16 h-16 rounded-3xl bg-light-bg flex items-center justify-center text-accent group-hover:bg-primary transition-all shrink-0"><Phone size={24} /></div>
                             <div>
                                 <h4 className="font-black text-primary mb-2 text-xl italic tracking-tight">Direct Hotlines</h4>
-                                <p className="text-primary/60 text-lg leading-relaxed">+977-9800000000 / 9811111111</p>
+                                <p className="text-primary/60 text-lg leading-relaxed">+977-9801671714 / 9817681582</p>
                             </div>
                          </div>
                     </div>
