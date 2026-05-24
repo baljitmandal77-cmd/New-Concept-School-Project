@@ -8,27 +8,80 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Menu, X, Phone, Mail, MapPin, Facebook, Youtube, Instagram, 
-  ChevronRight, Download, Search, LayoutGrid, Calendar, Users, 
+  ChevronLeft, ChevronRight, Download, Search, LayoutGrid, Calendar, Users, 
   Award, BookOpen, GraduationCap, Clock, MessageSquare, Plus, 
   Globe, ShieldCheck, ArrowRight, ExternalLink, Menu as MenuIcon,
-  Play, Sparkles, Heart, Zap, Camera, Shield, Coffee, Bus, Eye
+  Play, Sparkles, Heart, Zap, Camera, Shield, Coffee, Bus, Eye,
+  AlertCircle, CheckCircle, ShieldAlert
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+import { SchoolDataProvider, useSchoolData } from './context/SchoolDataContext';
+import AdminPanel from './components/AdminPanel';
 
 import logoUrl from './assets/images/school_logo_minimalist_1779109493110.png';
 import heroBannerUrl from './assets/images/school_hero_banner_1779108511571.png';
 import uniqueFeatureUrl from './assets/images/regenerated_image_1779108373950.jpg';
 import principalPortraitUrl from './assets/images/regenerated_image_1779108859642.jpg';
 
+// Local or placeholder image assets for safety (These can be uploaded to /src/assets/images/ and imported as well)
+const techlearningUrl = "https://images.unsplash.com/photo-1560523182-7ea90df18903?q=80&w=2070&auto=format&fit=crop";
+const smartclasslabUrl = "https://images.unsplash.com/photo-1524178232363-1fb28f74b0ed?q=80&w=2070&auto=format&fit=crop";
+const printcampus2Url = "https://images.unsplash.com/photo-1524178232363-1fb28f74b0ed?q=80&w=2070&auto=format&fit=crop";
+const printcampus3Url = "https://images.unsplash.com/photo-1549845345-0cd8f813c9fb?q=80&w=2070&auto=format&fit=crop";
+
 /** Utility for Tailwind classes */
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// --- SHARED COMPONENTS ---
+const IMG_CACHE_BUSTER = Date.now().toString(36);
 
-const LOGO_URL = logoUrl;
+interface LocalImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  localName: string;
+  fallback: string;
+}
+
+const LocalImg: React.FC<LocalImgProps> = ({ localName, fallback, className, alt, ...props }) => {
+  const [imgSrc, setImgSrc] = useState<string>(`/images/${localName}?cb=${IMG_CACHE_BUSTER}`);
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  useEffect(() => {
+    setImgSrc(`/images/${localName}?cb=${IMG_CACHE_BUSTER}`);
+    setHasError(false);
+  }, [localName]);
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true);
+      setImgSrc(fallback);
+    }
+  };
+
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      className={className}
+      onError={handleError}
+      {...props}
+    />
+  );
+};
+
+const LogoImg: React.FC<{ className?: string }> = ({ className }) => {
+  return (
+    <LocalImg 
+      localName="logo.png"
+      fallback={logoUrl}
+      alt="School Logo"
+      className={className}
+    />
+  );
+};
+
+// --- SHARED COMPONENTS ---
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,13 +106,13 @@ const Header = () => {
             <span className="flex items-center gap-2"><Phone size={12} className="text-accent" /> +977-9817681582</span>
             <span className="flex items-center gap-2"><Phone size={12} className="text-accent" /> +977-9801671714</span>
             <span className="flex items-center gap-2"><Mail size={12} className="text-accent" /> admissions@ncemhs.edu.np</span>
-            <span className="flex items-center gap-2"><MapPin size={12} className="text-accent" /> Baheda, Ekdara-5 Mahottari</span>
+            <span className="flex items-center gap-2"><MapPin size={12} className="text-accent" /> Baheda, Ekdara-6 Mahottari</span>
           </div>
           <div className="flex items-center space-x-4">
-            <a href="https://web.facebook.com/profile.php?id=61551887493888" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.facebook.com/share/18tuMWYjma/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-facebook-f"></i></a>
             <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-instagram"></i></a>
-            <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-youtube"></i></a>
-            <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-tiktok"></i></a>
+            <a href="https://youtube.com/@newconceptenglishmediumboardin?si=fs_uWpWoGv6MVXHH" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-youtube"></i></a>
+            <a href="https://www.tiktok.com/@newconceptembschool?_r=1&_t=ZS-96UBP2WKLaS" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-tiktok"></i></a>
           </div>
         </div>
       </div>
@@ -67,44 +120,17 @@ const Header = () => {
       {/* Main Navbar */}
       <nav className="bg-white/95 backdrop-blur-xl shadow-lg border-none sticky top-0 py-2 transition-all">
         <div className="container mx-auto px-4 flex justify-between items-center border-none">
-          <Link to="/" className="flex items-center gap-3 md:gap-4 group">
-            <div className="w-16 h-16 md:w-28 md:h-28 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
-              <img src={LOGO_URL} alt="School Logo" className="w-full h-full object-contain mix-blend-multiply" />
+          <Link to="/" className="flex items-center gap-3 transition-all">
+            <div className="w-16 h-16 md:w-24 md:h-24 flex items-center justify-center overflow-hidden transition-transform shrink-0">
+              <LogoImg className="w-full h-full object-contain mix-blend-multiply" />
             </div>
-            <div className="block">
-              <h1 
-                className="text-primary font-black uppercase tracking-tighter" 
-                style={{ 
-                  paddingLeft: '7px', 
-                  width: '164.677px', 
-                  height: '35.0035px', 
-                  fontSize: '22px', 
-                  fontStyle: 'normal', 
-                  marginLeft: '19px',
-                  lineHeight: 'none'
-                }}
-              >
+            <div className="flex flex-col justify-center">
+              <span className="text-xl md:text-2xl font-black uppercase tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 New Concept
-              </h1>
-              <p 
-                className="uppercase tracking-[0.25em] drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)] drop-shadow-[0_2px_4px_rgba(0,0,0,1)]" 
-                style={{ 
-                  color: '#000000',
-                  paddingLeft: '-3px',
-                  fontSize: '12px',
-                  lineHeight: '12.5px',
-                  textDecorationLine: 'none',
-                  fontFamily: 'Times New Roman',
-                  marginTop: '-4px',
-                  width: '234.438px',
-                  height: '16.4861px',
-                  borderColor: '#0e04ff',
-                  fontWeight: 'bold',
-                  borderStyle: 'none'
-                }}
-              >
-                English Medium School
-              </p>
+              </span>
+              <span className="text-[10px] md:text-xs font-black uppercase tracking-wider text-primary/65 block -mt-0.5 leading-tight">
+                English Medium Boarding School
+              </span>
             </div>
           </Link>
 
@@ -155,7 +181,7 @@ const Header = () => {
             >
               <div className="flex justify-between items-center mb-12">
                 <div className="w-20 h-20 flex items-center justify-center overflow-hidden scale-110">
-                  <img src={LOGO_URL} alt="School Logo" className="w-full h-full object-contain mix-blend-multiply" />
+                  <LogoImg className="w-full h-full object-contain mix-blend-multiply" />
                 </div>
                 <button onClick={() => setIsOpen(false)} className="p-3 bg-light-bg rounded-xl hover:bg-accent transition-colors">
                   <X size={20} />
@@ -185,8 +211,8 @@ const Header = () => {
                 <p className="text-[10px] font-bold text-primary/40 uppercase tracking-widest mb-4"></p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-sm font-bold text-primary">
-                    <Phone size={16} className="text-accent" /> +977-9817681582
-                    <Phone size={16} className="text-accent" /> +977-9801671714
+                    <Phone size={16} className="text-accent" /> 9817681582
+                    <Phone size={16} className="text-accent" /> 9801671714
                   </div>
                   <div className="flex items-center gap-3 text-sm font-bold text-primary">
                     <Mail size={16} className="text-accent" /> info@ncemhs.edu.np
@@ -220,7 +246,7 @@ const Footer = () => {
         <div className="space-y-8">
           <div className="flex items-center gap-6">
             <div className="w-80 h-80 flex items-center justify-center overflow-hidden">
-              <img src={LOGO_URL} alt="School Logo" className="w-full h-full object-contain invert mix-blend-screen opacity-95" />
+              <LogoImg className="w-full h-full object-contain invert mix-blend-screen opacity-95" />
             </div>
             <div>
               <h3 className="font-black text-2xl uppercase tracking-tighter">New Concept</h3>
@@ -231,15 +257,27 @@ const Footer = () => {
             The most trusted name in basic level education in Mahottari. Widely recognized as K.D. Sir's School, we nurture the seeds of tomorrow with modern technology and ancient values.
           </p>
           <div className="flex gap-4">
-             {[
-               { Icon: Facebook, url: "https://web.facebook.com/profile.php?id=61551887493888" },
-               { Icon: Youtube, url: "#" },
-               { Icon: Instagram, url: "#" }
-             ].map((social, i) => (
-               <a key={i} href={social.url} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-accent hover:text-primary hover:-translate-y-1 transition-all">
-                 <social.Icon size={20} />
-               </a>
-             ))}
+              {[
+                { Icon: Facebook, url: "https://www.facebook.com/share/18tuMWYjma/" },
+                { Icon: Youtube, url: "https://youtube.com/@newconceptenglishmediumboardin?si=fs_uWpWoGv6MVXHH" },
+                { Icon: Instagram, url: "#" },
+                { 
+                  Icon: () => (
+                    <svg xmlns="http://www.w3.org/2005/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  ), 
+                  url: "https://wa.me/9779817681582" 
+                },
+                { 
+                  Icon: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                  ), 
+                  url: "https://www.tiktok.com/@newconceptembschool?_r=1&_t=ZS-96UBP2WKLaS" 
+                }
+              ].map((social, i) => (
+                <a key={i} href={social.url} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-accent hover:text-primary hover:-translate-y-1 transition-all">
+                  {typeof social.Icon === 'function' ? <social.Icon /> : <social.Icon size={20} />}
+                </a>
+              ))}
           </div>
         </div>
 
@@ -259,11 +297,11 @@ const Footer = () => {
           <ul className="space-y-6 text-sm font-bold text-white/70">
             <li className="flex gap-4">
               <MapPin size={22} className="text-accent shrink-0" />
-              <span className="leading-relaxed">Baheda, Ekdara-5, Mahottari, Madhesh Nepal</span>
+              <span className="leading-relaxed">Baheda, Ekdara-6, Mahottari, Madhesh Nepal</span>
             </li>
             <li className="flex gap-4">
               <Phone size={22} className="text-accent shrink-0" />
-              <span>+977-9801671714<br />+977-9817681582</span>
+              <span>9801671714<br />9817681582</span>
             </li>
             <li className="flex gap-4">
               <Mail size={22} className="text-accent shrink-0" />
@@ -288,10 +326,15 @@ const Footer = () => {
 
       <div className="bg-black/40 py-6">
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-[10px] text-white/30 gap-6">
-          <p className="font-bold tracking-widest uppercase">&copy; {new Date().getFullYear()} NEW CONCEPT ENGLISH MEDIUM SCHOOL. EDUCATIONAL PRIDE.</p>
-          <p className="font-black tracking-[0.2em] uppercase bg-white/5 px-4 py-2 rounded-lg">
-            Developed & Powered by: <a href="https://www.baljitmandal.com.np" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline decoration-accent/30 decoration-2 transition-all">Baljit Mandal (TechMind IT Solution)</a>
-          </p>
+          <p className="font-bold tracking-widest uppercase">&copy; {new Date().getFullYear()} NEW CONCEPT ENGLISH MEDIUM BOARDING SCHOOL PVT. LTD. EDUCATIONAL PRIDE.</p>
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <p className="font-black tracking-[0.2em] uppercase bg-white/5 px-4 py-2 rounded-lg">
+              Developed & Powered by: <a href="https://www.baljitmandal.com.np" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline decoration-accent/30 decoration-2 transition-all">Baljit Mandal (TechMind IT Solution)</a>
+            </p>
+            <Link to="/admin" className="text-accent/60 hover:text-accent font-black tracking-widest text-[10px] uppercase flex items-center gap-1.5 transition-colors bg-white/5 px-4 py-2 rounded-lg">
+              <ShieldCheck size={11} /> Admin Panel
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
@@ -300,14 +343,14 @@ const Footer = () => {
 
 // --- HOME PAGE ---
 const Home = () => {
+  const { tickerMessage } = useSchoolData();
   return (
     <main>
       {/* Emergency ticker */}
       <div className="bg-red-600 text-white py-3 relative overflow-hidden whitespace-nowrap z-40">
         <div className="flex gap-16 animate-ticker font-black text-[11px] uppercase tracking-[0.2em]">
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> New Admission Started for 2083 Session. Limited Scholarship Slots.</span>
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> !!Admission Open!!</span>
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> !!Admission Now!!</span>
+          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> {tickerMessage || 'Admission Open for 2083 Session!'}</span>
+          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> {tickerMessage || 'Admission Open for 2083 Session!'}</span>
         </div>
       </div>
 
@@ -315,7 +358,7 @@ const Home = () => {
       <section className="relative min-h-[90vh] lg:h-[95vh] flex items-center overflow-hidden bg-primary py-20 lg:py-0">
          <div className="absolute inset-0 z-0">
            <img 
-            src={heroBannerUrl} 
+            src="/images/hero_banner.png" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = heroBannerUrl; }} 
             className="w-full h-full object-cover opacity-30 mix-blend-luminosity scale-105" 
             alt="School Banner"
            />
@@ -329,23 +372,34 @@ const Home = () => {
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="max-w-4xl"
            >
-             <div className="flex items-center gap-4 mb-10">
+             <div className="flex items-center gap-4 mb-6">
                <span className="h-[2px] w-12 bg-accent"></span>
                <span className="text-accent font-black uppercase tracking-[0.4em] text-[11px]">Ekdara's Top English Medium Hub</span>
              </div>
+             
+             {/* Premium fancy styled School Name design in Hero area */}
+             <div className="mb-8 block">
+               <span className="text-4xl md:text-7xl font-sans font-black tracking-tight uppercase bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400 text-transparent bg-clip-text drop-shadow-[0_4px_12px_rgba(251,191,36,0.3)] block font-serif italic mb-2 select-none">
+                 New Concept
+               </span>
+               <span className="text-xs md:text-sm font-black tracking-[0.35em] text-accent uppercase block pl-2 selection:bg-accent/30 selection:text-white">
+                 English Medium Boarding School
+               </span>
+             </div>
+
              <h1 className="text-4xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter mb-10">
                Empowering <br />
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-white italic">Young Minds.</span>
              </h1>
              <p className="text-lg md:text-2xl text-white/60 mb-10 lg:mb-14 max-w-2xl leading-relaxed font-medium">
-               Providing a world-class English medium foundation for children from Nursery to Grade 5 with a focus on holistic development and character building.
+               Providing a world-class English medium foundation for children from Nursery to Grade 7 with a focus on holistic development and character building.
              </p>
              <div className="flex flex-col sm:flex-row gap-6">
                <Link to="/admissions" className="bg-accent text-primary px-12 py-6 rounded-2xl font-black uppercase text-sm shadow-2xl hover:shadow-accent/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
                  Start Admission <ArrowRight size={20} />
                </Link>
                <Link to="/gallery" className="bg-white/5 backdrop-blur-xl border border-white/10 px-12 py-6 rounded-2xl font-black uppercase text-sm text-white hover:bg-white/10 transition-all flex items-center justify-center gap-3">
-                 Inside Our campus <Play size={18} />
+                 Inside Our School <Play size={18} />
                </Link>
              </div>
            </motion.div>
@@ -392,16 +446,19 @@ const Home = () => {
             {[
               {
                 img: uniqueFeatureUrl,
+                localName: "unique_feature.jpg",
                 title: "Holistic Environment",
                 desc: "Our School is designed to inspire creativity, with open spaces and modern courses."
               },
               {
-                img: "https://images.unsplash.com/photo-1560523182-7ea90df18903?q=80&w=2070&auto=format&fit=crop",
+                img: techlearningUrl,
+                localName: "tech_learning.jpg",
                 title: "Tech-Infused Learning",
                 desc: "Students use computer and smart boards to grasp complex concepts through visualization."
               },
               {
                 img: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2040&auto=format&fit=crop",
+                localName: "moral_integrity.jpg",
                 title: "Moral Integrity",
                 desc: "We instill core human values and ethics to ensure our students grow into responsible citizens."
               }
@@ -411,7 +468,7 @@ const Home = () => {
                 whileHover={{ y: -10 }}
                 className="group relative h-[400px] md:h-[500px] rounded-[40px] md:rounded-[50px] overflow-hidden shadow-premium"
               >
-                <img src={item.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={item.title} />
+                <LocalImg localName={item.localName} fallback={item.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={item.title} />
                 <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 bg-gradient-to-t from-primary/95 via-primary/30 to-transparent">
                    <h4 className="text-2xl font-black text-white mb-4 italic tracking-tight">{item.title}</h4>
                    <p className="text-white/60 text-sm leading-relaxed mb-6">{item.desc}</p>
@@ -437,13 +494,13 @@ const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
              {[
-               { time: "09:30 AM", event: "Morning Assembly", img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" },
-               { time: "11:00 AM", event: "Smart Class Labs", img: "https://images.unsplash.com/photo-1524178232363-1fb28f74b0ed?q=80&w=2070&auto=format&fit=crop" },
-               { time: "01:00 PM", event: "Healthy Lunch Break", img: "https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=2048&auto=format&fit=crop" },
-               { time: "02:30 PM", event: "Co-Curricular Clubs", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop" }
+               { time: "09:30 AM", event: "Morning Assembly", img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop", localName: "assembly.jpg" },
+               { time: "11:00 AM", event: "Smart Class Labs", img: smartclasslabUrl, localName: "science_lab.jpg" },
+               { time: "01:00 PM", event: "Healthy Lunch Break", img: "https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=2048&auto=format&fit=crop", localName: "healthy_lunch.jpg" },
+               { time: "02:30 PM", event: "Co-Curricular Clubs", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop", localName: "curricular_clubs.jpg" }
              ].map((node, i) => (
                <div key={i} className="relative group rounded-[40px] overflow-hidden aspect-[4/5] shadow-lg">
-                 <img src={node.img} className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-700" alt={node.event} />
+                 <LocalImg localName={node.localName} fallback={node.img} className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-700" alt={node.event} />
                  <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
                    <span className="text-accent text-[11px] font-black uppercase tracking-widest mb-2 block">{node.time}</span>
                    <h5 className="text-white font-bold text-lg">{node.event}</h5>
@@ -463,7 +520,7 @@ const Home = () => {
              <div className="relative">
                <div className="aspect-square bg-white/10 rounded-3xl md:rounded-[40px] overflow-hidden border border-white/10 relative p-3 md:p-4 group">
                  <img 
-                  src={principalPortraitUrl} 
+                  src="/images/principal.jpg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = principalPortraitUrl; }} 
                   className="w-full h-full object-cover rounded-2xl md:rounded-[30px] group-hover:scale-105 transition-all duration-700" 
                   alt="Principal" 
                  />
@@ -503,11 +560,44 @@ const Home = () => {
 // --- ADMISSIONS PAGE ---
 const Admissions = () => {
     const [submitted, setSubmitted] = useState(false);
+    const { fees, loading, submitAdmissionRequest } = useSchoolData();
+
+    // Form states
+    const [studentName, setStudentName] = useState("");
+    const [targetClass, setTargetClass] = useState("Nursery");
+    const [guardianContact, setGuardianContact] = useState("");
+    const [address, setAddress] = useState("");
+    const [previousSchool, setPreviousSchool] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
-        // Enrollment simulation logic
+        setErrorMessage("");
+        setSubmitting(true);
+        try {
+            const success = await submitAdmissionRequest({
+                studentName,
+                targetClass,
+                guardianContact,
+                address,
+                previousSchool
+            });
+            if (success) {
+                setSubmitted(true);
+                setStudentName("");
+                setTargetClass("Nursery");
+                setGuardianContact("");
+                setAddress("");
+                setPreviousSchool("");
+            } else {
+                setErrorMessage("Failure saving admission inquiry. Please try again.");
+            }
+        } catch (err: any) {
+            setErrorMessage("An error occurred: " + err.message);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -552,12 +642,12 @@ const Admissions = () => {
                       </div>
 
                       <div className="bg-primary p-12 rounded-[50px] shadow-deep text-white border border-white/5 relative group overflow-hidden">
-                         <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2132&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-20 filter grayscale group-hover:scale-110 transition-all duration-1000" alt="Support" />
+                         <img src="/images/admissions_bg.jpg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2132&auto=format&fit=crop"; }} className="absolute inset-0 w-full h-full object-cover opacity-20 filter grayscale group-hover:scale-110 transition-all duration-1000" alt="Support" />
                          <div className="relative z-10">
                             <h4 className="text-xl font-bold mb-6 italic underline decoration-accent decoration-4">Need Assistance?</h4>
                             <p className="text-white/60 text-sm mb-8 leading-relaxed font-medium">Our admission officers are available 10:00 AM - 04:00 PM (Sun-Fri) for offline queries.</p>
                             <div className="flex gap-4">
-                                <a href="tel:+9779800000000" className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center hover:bg-accent hover:text-primary transition-all"><Phone size={24} /></a>
+                                <a href="tel:+9779817681582" className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center hover:bg-accent hover:text-primary transition-all"><Phone size={24} /></a>
                                 <a href="mailto:info@ncemhs.edu.np" className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center hover:bg-accent hover:text-primary transition-all"><Mail size={24} /></a>
                             </div>
                          </div>
@@ -583,40 +673,145 @@ const Admissions = () => {
                                     <p className="text-primary/40 font-bold text-xs uppercase tracking-[0.2em]">Fill carefully for document validation</p>
                                 </div>
                                 <form onSubmit={handleSubmit} className="space-y-10">
+                                    {errorMessage && (
+                                        <div className="p-5 rounded-2xl bg-red-50 text-red-600 font-bold text-xs border border-red-100">
+                                            {errorMessage}
+                                        </div>
+                                    )}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Student Full Name</label>
-                                            <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="e.g. Rahul Kumar Shah" required />
+                                            <input
+                                                type="text"
+                                                value={studentName}
+                                                onChange={(e) => setStudentName(e.target.value)}
+                                                className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold"
+                                                placeholder="e.g. Rahul Kumar Shah"
+                                                required
+                                                disabled={submitting}
+                                            />
                                         </div>
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Target Class</label>
-                                            <select className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold appearance-none">
-                                                {['Nursery', 'LKG', 'UKG', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5'].map(cls => <option key={cls}>{cls}</option>)}
+                                            <select
+                                                value={targetClass}
+                                                onChange={(e) => setTargetClass(e.target.value)}
+                                                className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold appearance-none"
+                                                disabled={submitting}
+                                            >
+                                                {['Nursery', 'LKG', 'UKG', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7'].map(cls => <option key={cls} value={cls}>{cls}</option>)}
                                             </select>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Guardian Contact</label>
-                                            <input type="tel" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="+977-XXXXXXXXXX" required />
+                                            <input
+                                                type="tel"
+                                                value={guardianContact}
+                                                onChange={(e) => setGuardianContact(e.target.value)}
+                                                className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold"
+                                                placeholder="+977-XXXXXXXXXX"
+                                                required
+                                                disabled={submitting}
+                                            />
                                         </div>
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Address</label>
-                                            <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="e.g. Baheda, Ekdara" required />
+                                            <input
+                                                type="text"
+                                                value={address}
+                                                onChange={(e) => setAddress(e.target.value)}
+                                                className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold"
+                                                placeholder="e.g. Baheda, Ekdara"
+                                                required
+                                                disabled={submitting}
+                                            />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 ml-4">Previous Institution (If Any)</label>
-                                        <input type="text" className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold" placeholder="Previous School name / Self-study" />
+                                        <input
+                                            type="text"
+                                            value={previousSchool}
+                                            onChange={(e) => setPreviousSchool(e.target.value)}
+                                            className="w-full bg-light-bg border-none rounded-3xl p-6 focus:ring-4 focus:ring-accent/20 transition-all text-sm font-bold"
+                                            placeholder="Previous School name / Self-study"
+                                            disabled={submitting}
+                                        />
                                     </div>
-                                    <button className="w-full bg-primary text-white py-7 rounded-3xl font-black uppercase tracking-widest text-sm shadow-deep hover:bg-black transition-all flex items-center justify-center gap-4">
-                                        Validate & Submit Inquiry <ArrowRight className="text-accent" />
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className="w-full bg-primary text-white py-7 rounded-3xl font-black uppercase tracking-widest text-sm shadow-deep hover:bg-black transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                                    >
+                                        {submitting ? "Sending Inquiry..." : "Validate & Submit Inquiry"}{" "}
+                                        <ArrowRight className="text-accent" />
                                     </button>
                                 </form>
                             </>
                         )}
                       </div>
                    </div>
+                </div>
+            </section>
+
+            {/* FEE STRUCTURE SECTION */}
+            <section className="bg-light-bg py-24 border-t border-black/5">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-4xl mx-auto text-center mb-16">
+                        <span className="text-[10px] bg-primary text-white px-5 py-2 rounded-full font-black uppercase tracking-widest inline-block shadow-md">School Finance Registry</span>
+                        <h2 className="text-3xl md:text-5xl font-black text-primary mt-6 tracking-tight italic">Fee Schedule & Tuition Register</h2>
+                        <p className="text-primary/40 text-sm font-semibold mt-3 max-w-lg mx-auto leading-relaxed">
+                            No hidden charges or unexpected school bills. Real-time transparent fee records validated on the official school ledger.
+                        </p>
+                    </div>
+
+                    <div className="max-w-5xl mx-auto bg-white rounded-[40px] md:rounded-[60px] border border-black/5 shadow-2xl overflow-hidden">
+                        {loading ? (
+                            <div className="p-20 text-center text-primary/40 font-bold text-sm flex flex-col items-center justify-center gap-4">
+                                <div className="animate-spin w-8 h-8 rounded-full border-4 border-accent border-t-primary"></div>
+                                Retrieving active tariff indices...
+                            </div>
+                        ) : !fees || fees.length === 0 ? (
+                            <div className="p-20 text-center text-primary/40 font-bold text-sm">
+                                Fee schedules are undergoing yearly administration revisions. Please check back soon or consult offline admissions details.
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-primary text-white text-[10px] font-black uppercase tracking-widest border-none">
+                                            <th className="p-6 md:p-8">Class Name</th>
+                                            <th className="p-6 md:p-8 text-right">Admission Fee (NPR)</th>
+                                            <th className="p-6 md:p-8 text-right">Monthly Tuition (NPR)</th>
+                                            <th className="p-6 md:p-8 text-right">Exam Fee (NPR)</th>
+                                            <th className="p-6 md:p-8 text-right">Misc Fee (NPR)</th>
+                                            <th className="p-6 md:p-8 text-right bg-accent text-primary">Total Est. (NPR)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-black/5">
+                                        {fees.map((f, i) => {
+                                            const rowTotal = (f.admissionFee || 0) + (f.monthlyFee || 0) + (f.examFee || 0) + (f.miscFee || 0);
+                                            return (
+                                                <tr key={i} className="hover:bg-light-bg/50 transition-colors font-bold text-sm text-primary">
+                                                    <td className="p-6 md:p-8 font-black uppercase tracking-tight text-primary/80">{f.className}</td>
+                                                    <td className="p-6 md:p-8 text-right">Rs. {f.admissionFee?.toLocaleString() || 0}</td>
+                                                    <td className="p-6 md:p-8 text-right">Rs. {f.monthlyFee?.toLocaleString() || 0}</td>
+                                                    <td className="p-6 md:p-8 text-right">Rs. {f.examFee?.toLocaleString() || 0}</td>
+                                                    <td className="p-6 md:p-8 text-right">Rs. {f.miscFee?.toLocaleString() || 0}</td>
+                                                    <td className="p-6 md:p-8 text-right bg-accent/25 text-primary font-black font-mono">Rs. {rowTotal.toLocaleString()}</td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                        <div className="p-8 md:p-12 bg-light-bg/40 border-t border-black/5 text-center text-[10px] font-bold text-primary/40 uppercase tracking-widest">
+                            * Exam fees are structured per terminal schedule. Books and uniform expenditures are calculated separately at local stationery indices.
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -626,10 +821,11 @@ const Admissions = () => {
 // --- ACADEMICS PAGE UPDATE ---
 const Academics = () => {
     const classes = [
-        { name: "Nursery", img: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?q=80&w=2070&auto=format&fit=crop", desc: "The beginning of a beautiful journey. We focus on play-based motor skill development and sensory learning.", focus: ["Cognitive Play", "Social Interaction", "Art & Music"] },
-        { name: "LKG & UKG", img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2070&auto=format&fit=crop", desc: "Preparing young minds for formal education with phonetic sounds, elementary counting, and etiquette.", focus: ["Early Literacy", "Numerical Foundation", "Team Building"] },
-        { name: "Grade 1 - 3", img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2070&auto=format&fit=crop", desc: "Core conceptual learning in English, Maths, and Social Science through project-based teaching methodologies.", focus: ["Reading Fluency", "Logical Math", "Cultural Studies"] },
-        { name: "Grade 4 - 5", img: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop", desc: "Transitioning into advanced analytical thinking and environmental awareness in preparation for upper-primary.", focus: ["Complex Sci-Inquiry", "Grammar Mastery", "Social Responsibility"] }
+        { name: "Nursery", img: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?q=80&w=2070&auto=format&fit=crop", localName: "class_nursery.jpg", desc: "The beginning of a beautiful journey. We focus on play-based motor skill development and sensory learning.", focus: ["Cognitive Play", "Social Interaction", "Art & Music"] },
+        { name: "LKG & UKG", img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2070&auto=format&fit=crop", localName: "class_lkg_ukg.jpg", desc: "Preparing young minds for formal education with phonetic sounds, elementary counting, and etiquette.", focus: ["Early Literacy", "Numerical Foundation", "Team Building"] },
+        { name: "Grade 1 - 3", img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2070&auto=format&fit=crop", localName: "class_grade1_3.jpg", desc: "Core conceptual learning in English, Maths, and Social Science through project-based teaching methodologies.", focus: ["Reading Fluency", "Logical Math", "Cultural Studies"] },
+        { name: "Grade 4 - 5", img: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop", localName: "class_grade4_5.jpg", desc: "Transitioning into advanced analytical thinking and environmental awareness in preparation for upper-primary.", focus: ["Complex Sci-Inquiry", "Grammar Mastery", "Social Responsibility"] },
+	{ name: "Grade 6 - 7", img: "https://images.unsplash.com/photo-1524178232363-1fb28f74b0ed?q=80&w=2070&auto=format&fit=crop", localName: "class_grade6_7.jpg", desc: "Transitioning into advanced analytical thinking, computer applications, and digital literacy to face lower-secondary challenges.", focus: ["Advanced Mathematics", "Technology Basics", "Leadership & Civic Sense"] }
     ];
 
     return (
@@ -637,7 +833,7 @@ const Academics = () => {
             <section className="bg-primary py-24 md:py-32 text-white relative overflow-hidden">
                 <div className="container mx-auto px-4 text-center relative z-10">
                     <h1 className="text-4xl md:text-8xl font-black mb-8 tracking-tighter uppercase italic">Curriculum <br /><span className="text-accent">Spectrum.</span></h1>
-                    <p className="text-white/40 max-w-xl mx-auto font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs">Specialized Foundation for Nursery to Grade 5</p>
+                    <p className="text-white/40 max-w-xl mx-auto font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs">Specialized Foundation for Nursery to Grade 7</p>
                 </div>
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
             </section>
@@ -665,7 +861,7 @@ const Academics = () => {
                                 <div className="w-full lg:w-1/2 relative group">
                                     <div className="absolute -inset-2 md:-inset-4 bg-accent/20 rounded-3xl md:rounded-[60px] blur-2xl md:blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
                                     <div className="relative aspect-video bg-light-bg rounded-3xl md:rounded-[50px] overflow-hidden shadow-2xl border-4 border-white">
-                                        <img src={cls.img} className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" alt={cls.name} />
+                                        <LocalImg localName={cls.localName} fallback={cls.img} className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" alt={cls.name} />
                                         <div className="absolute top-4 left-4 md:top-8 md:left-8">
                                             <div className="bg-white/20 backdrop-blur-md px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl border border-white/20 text-white font-black uppercase text-[8px] md:text-xs tracking-widest">
                                                 NC-ACADEMICS-{i+1}
@@ -697,17 +893,94 @@ const Academics = () => {
 // --- GALLERY PAGE UPDATE ---
 const Gallery = () => {
     const photos = [
-        { src: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop", title: "Smart Science Lab", desc: "Advanced laboratory setup for basic experimentation and conceptual research." },
-        { src: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop", title: "Morning Assembly", desc: "Inculcating discipline and national pride through daily prayers and updates." },
-        { src: "https://images.unsplash.com/photo-1524178232363-1fb28f74b0ed?q=80&w=2070&auto=format&fit=crop", title: "ICT Learning Hub", desc: "Where students interact with digital worlds and coding fundamentals." },
-        { src: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop", title: "Cultural Festival", desc: "Celebrating the vibrant heritage of Madhesh through art, dance, and music." },
-        { src: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2132&auto=format&fit=crop", title: "Sports Pavilion", desc: "Promoting physical wellness and competitive spirit in athletics." },
-        { src: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=2070&auto=format&fit=crop", title: "Play Area", desc: "Safe and modern recreational spaces for Nursery and Kindergarten scholars." }
+        { src: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop", localName: "gallery1.jpg", title: "Smart Science Lab", desc: "Advanced laboratory setup for basic experimentation and conceptual research." },
+        { src: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop", localName: "gallery2.jpg", title: "Morning Assembly", desc: "Inculcating discipline and national pride through daily prayers and updates." },
+        { src: "https://images.unsplash.com/photo-1524178232363-1fb28f74b0ed?q=80&w=2070&auto=format&fit=crop", localName: "gallery3.jpg", title: "ICT Learning Hub", desc: "Where students interact with digital worlds and coding fundamentals." },
+        { src: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop", localName: "gallery4.jpg", title: "Cultural Festival", desc: "Celebrating the vibrant heritage of Madhesh through art, dance, and music." },
+        { src: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2132&auto=format&fit=crop", localName: "gallery5.jpg", title: "Sports Pavilion", desc: "Promoting physical wellness and competitive spirit in athletics." },
+        { src: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=2070&auto=format&fit=crop", localName: "gallery6.jpg", title: "Play Area", desc: "Safe and modern recreational spaces for Nursery and Kindergarten scholars." }
     ];
+
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const [headerBgIndex, setHeaderBgIndex] = useState<number>(0);
+
+    // Auto-advance header background slideshow every 5 seconds (5000ms)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setHeaderBgIndex((prev) => (prev + 1) % photos.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [photos.length]);
+
+    // Auto-advance slideshow
+    useEffect(() => {
+        let interval: NodeJS.Timeout | null = null;
+        if (isPlaying && activeIndex !== null) {
+            interval = setInterval(() => {
+                setActiveIndex((prev) => (prev !== null ? (prev + 1) % photos.length : 0));
+            }, 3000);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isPlaying, activeIndex, photos.length]);
+
+    const handleNext = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        setActiveIndex((prev) => (prev !== null ? (prev + 1) % photos.length : 0));
+    };
+
+    const handlePrev = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        setActiveIndex((prev) => (prev !== null ? (prev - 1 + photos.length) % photos.length : 0));
+    };
+
+    const handleClose = () => {
+        setActiveIndex(null);
+        setIsPlaying(false);
+    };
+
+    // Keyboard support
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (activeIndex === null) return;
+            if (e.key === "ArrowRight") handleNext();
+            if (e.key === "ArrowLeft") handlePrev();
+            if (e.key === "Escape") handleClose();
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [activeIndex]);
 
     return (
         <main className="pt-10">
             <section className="bg-primary pt-24 pb-48 text-white text-center relative overflow-hidden">
+                {/* Header background slideshow with AnimatePresence */}
+                <div className="absolute inset-0 z-0 select-none pointer-events-none">
+                    <AnimatePresence mode="popLayout">
+                        <motion.div
+                            key={headerBgIndex}
+                            initial={{ opacity: 0, scale: 1.05 }}
+                            animate={{ opacity: 0.25, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                            className="absolute inset-0"
+                        >
+                            <img 
+                                src={`/images/${photos[headerBgIndex].localName}`} 
+                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = photos[headerBgIndex].src; }} 
+                                alt="Slideshow Background" 
+                                className="w-full h-full object-cover"
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+                    {/* Atmospheric shade overlays to guarantee superb text contrast and blend seamlessly with school branding */}
+                    <div className="absolute inset-0 bg-primary/40 mix-blend-multiply"></div>
+                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-primary via-primary/80 to-transparent"></div>
+                    <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-primary/80 via-transparent to-transparent"></div>
+                </div>
+
                 <div className="container mx-auto px-4 relative z-10">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <span className="bg-accent text-primary px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 inline-block shadow-xl">Visual Chronicles</span>
@@ -715,7 +988,7 @@ const Gallery = () => {
                         <p className="text-white/60 max-w-xl mx-auto text-base md:text-lg font-medium">A window into the vibrant life, activities, and achievements of our young scholars.</p>
                     </motion.div>
                 </div>
-                <div className="absolute top-0 right-0 opacity-5 -mr-20 -mt-20">
+                <div className="absolute top-0 right-0 opacity-5 -mr-20 -mt-20 z-10 pointer-events-none">
                     <Camera size={500} />
                 </div>
             </section>
@@ -728,12 +1001,20 @@ const Gallery = () => {
                                 key={i}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
-                                className="group relative h-[450px] rounded-[40px] md:rounded-[50px] overflow-hidden shadow-premium border border-light-bg"
+                                onClick={() => setActiveIndex(i)}
+                                className="group relative h-[450px] rounded-[40px] md:rounded-[50px] overflow-hidden shadow-premium border border-light-bg cursor-pointer"
                             >
-                                 <img src={item.src} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                 <img src={`/images/${item.localName}`} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = item.src; }} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                                  <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/30 to-transparent opacity-90 transition-opacity"></div>
                                  
-                                 <div className="absolute inset-x-0 bottom-0 p-8 md:p-10">
+                                 {/* Hover overlay indicater */}
+                                 <div className="absolute inset-0 bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                     <span className="bg-accent text-primary font-black uppercase tracking-widest text-[10px] px-6 py-3 rounded-full shadow-2xl scale-95 group-hover:scale-100 transition-all duration-300">
+                                         Open Photo Slideshow
+                                     </span>
+                                 </div>
+
+                                 <div className="absolute inset-x-0 bottom-0 p-8 md:p-10 pointer-events-none">
                                     <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-primary mb-6 shadow-xl group-hover:rotate-12 transition-transform">
                                         <Camera size={24} />
                                     </div>
@@ -745,6 +1026,114 @@ const Gallery = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Premium Slideshow Lightbox Showcase overlay modal */}
+            <AnimatePresence>
+                {activeIndex !== null && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={handleClose}
+                        className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4 md:p-8"
+                        style={{ height: "100dvh" }}
+                    >
+                        {/* Title Row / Count Controls */}
+                        <div className="flex justify-between items-center w-full max-w-7xl mx-auto z-10" onClick={(e) => e.stopPropagation()}>
+                            <div className="text-white text-xs md:text-sm font-bold tracking-widest uppercase selection:bg-transparent">
+                                Captured Memory {activeIndex + 1} of {photos.length}
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <button 
+                                    onClick={() => setIsPlaying(!isPlaying)}
+                                    className="bg-white/10 hover:bg-accent hover:text-primary text-white border border-white/10 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center gap-2 cursor-pointer select-none"
+                                    title={isPlaying ? "Pause Auto Slideshow" : "Run Auto Slideshow"}
+                                >
+                                    <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-green-400 animate-ping' : 'bg-white/40'}`}></span>
+                                    {isPlaying ? "Pause Slideshow" : "Play Slideshow"}
+                                </button>
+                                <button 
+                                    onClick={handleClose}
+                                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-red-500 text-white hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/10 shadow-lg select-none"
+                                    title="Close View Window (Esc)"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Middle Large View Column */}
+                        <div className="flex-1 flex items-center justify-between w-full max-w-7xl mx-auto relative my-4 md:my-0">
+                            {/* Left Nav trigger */}
+                            <button 
+                                onClick={handlePrev}
+                                className="absolute left-2 md:-left-8 z-10 w-14 h-14 rounded-full bg-white/5 hover:bg-accent border border-white/10 text-white hover:text-primary flex items-center justify-center transition-all shadow-2xl cursor-pointer select-none"
+                                title="Previous Memory (←)"
+                            >
+                                <ChevronLeft size={28} />
+                            </button>
+
+                            {/* Main Frame showcase block */}
+                            <div 
+                                className="w-full max-w-4xl mx-auto aspect-video max-h-[58vh] md:max-h-[68vh] rounded-[32px] md:rounded-[40px] overflow-hidden border-2 border-white/10 shadow-[0_0_50px_rgba(251,191,36,0.15)] bg-primary/20 relative"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <AnimatePresence mode="wait">
+                                    <motion.img 
+                                        key={activeIndex}
+                                        src={`/images/${photos[activeIndex].localName}`} 
+                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = photos[activeIndex].src; }} 
+                                        alt={photos[activeIndex].title}
+                                        initial={{ opacity: 0, x: 40, scale: 0.98 }}
+                                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                                        exit={{ opacity: 0, x: -40, scale: 1.02 }}
+                                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                                        className="w-full h-full object-cover" 
+                                    />
+                                </AnimatePresence>
+                                {/* Info Box */}
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 md:p-10 text-left pointer-events-none select-none">
+                                    <h4 className="text-xl md:text-3xl font-black text-accent mb-2 italic tracking-tight uppercase">
+                                        {photos[activeIndex].title}
+                                    </h4>
+                                    <p className="text-white/80 text-xs md:text-sm leading-relaxed max-w-2xl font-medium">
+                                        {photos[activeIndex].desc}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Right Nav trigger */}
+                            <button 
+                                onClick={handleNext}
+                                className="absolute right-2 md:-right-8 z-10 w-14 h-14 rounded-full bg-white/5 hover:bg-accent border border-white/10 text-white hover:text-primary flex items-center justify-center transition-all shadow-2xl cursor-pointer select-none"
+                                title="Next Memory (→)"
+                            >
+                                <ChevronRight size={28} />
+                            </button>
+                        </div>
+
+                        {/* Bottom Thumbnail strip bar */}
+                        <div 
+                            className="w-full max-w-3xl mx-auto z-10 bg-white/5 border border-white/10 p-4 rounded-[30px] flex gap-3 md:gap-4 overflow-x-auto justify-start md:justify-center items-center scrollbar-none scroll-smooth select-none mb-2"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {photos.map((item, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setActiveIndex(idx)}
+                                    className={`relative h-12 w-20 md:h-16 md:w-28 rounded-2xl overflow-hidden shrink-0 transition-all border-2 cursor-pointer ${
+                                        activeIndex === idx 
+                                        ? 'border-accent scale-105 ring-2 ring-accent/30 shadow-[0_0_15px_rgba(251,191,36,0.5)]' 
+                                        : 'border-transparent opacity-40 hover:opacity-80'
+                                    }`}
+                                >
+                                    <img src={`/images/${item.localName}`} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = item.src; }} alt={item.title} className="w-full h-full object-cover" />
+                                </button>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </main>
     )
 }
@@ -759,7 +1148,7 @@ const About = () => {
                     <p className="text-white/60 max-w-2xl text-base md:text-lg font-medium leading-relaxed">Defining the standards of education in Mahottari since 2071 with a vision beyond classrooms.</p>
                 </div>
                 <div className="absolute inset-0 bg-primary/40 z-0">
-                  <img src="https://images.unsplash.com/photo-1541339907198-e08759df9a13?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover opacity-20 mix-blend-overlay" alt="About BG" />
+                  <LocalImg localName="about_bg.jpg" fallback="https://images.unsplash.com/photo-1541339907198-e08759df9a13?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover opacity-20 mix-blend-overlay" alt="About BG" />
                 </div>
             </section>
             
@@ -771,7 +1160,7 @@ const About = () => {
                             title="Nurturing Roots, Growing Wings."
                         />
                         <div className="space-y-8 text-primary/60 text-lg leading-relaxed">
-                            <p>Founded on the principles of academic rigor and moral integrity, New Concept English Medium School has stood as a bastion of quality for over a decade. We began with a handful of students and a mountain of resolve.</p>
+                            <p>Founded on the principles of academic rigor and moral integrity, New Concept English Medium Boarding School has stood as a bastion of quality for over a decade. We began with a handful of students and a mountain of resolve.</p>
                             <div className="grid grid-cols-2 gap-8 py-8 border-y">
                                 <div className="space-y-2">
                                     <div className="text-3xl font-black text-primary italic tracking-tighter">13+ Years</div>
@@ -787,14 +1176,14 @@ const About = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-6">
-                            <div className="h-48 md:h-64 bg-light-bg rounded-[32px] md:rounded-[40px] overflow-hidden shadow-lg border-2 border-white"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" alt="Campus 1" /></div>
+                            <div className="h-48 md:h-64 bg-light-bg rounded-[32px] md:rounded-[40px] overflow-hidden shadow-lg border-2 border-white"><img src="/images/campus1.jpg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2070&auto=format&fit=crop"; }} className="w-full h-full object-cover" alt="Campus 1" /></div>
                             <div className="h-64 md:h-96 bg-accent/20 rounded-[32px] md:rounded-[40px] overflow-hidden shadow-lg border-2 border-white flex items-center justify-center p-6 md:p-8 text-center">
                                 <p className="text-primary font-black italic text-lg md:text-xl">"A sanctuary where every question finds a path to discovery."</p>
                             </div>
                         </div>
                         <div className="space-y-6 md:pt-12">
-                            <div className="h-64 md:h-96 bg-primary/10 rounded-[32px] md:rounded-[40px] overflow-hidden shadow-lg border-2 border-white"><img src="https://images.unsplash.com/photo-1524178232363-1fb28f74b0ed?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" alt="Campus 2" /></div>
-                            <div className="h-48 md:h-64 bg-light-bg rounded-[32px] md:rounded-[40px] overflow-hidden shadow-lg border-2 border-white"><img src="https://images.unsplash.com/photo-1549845345-0cd8f813c9fb?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" alt="Campus 3" /></div>
+                            <div className="h-64 md:h-96 bg-primary/10 rounded-[32px] md:rounded-[40px] overflow-hidden shadow-lg border-2 border-white"><img src="/images/campus2.jpg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = printcampus2Url; }} className="w-full h-full object-cover" alt="Campus 2" /></div>
+                            <div className="h-48 md:h-64 bg-light-bg rounded-[32px] md:rounded-[40px] overflow-hidden shadow-lg border-2 border-white"><img src="/images/campus3.jpg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = printcampus3Url; }} className="w-full h-full object-cover" alt="Campus 3" /></div>
                         </div>
                     </div>
                 </div>
@@ -812,12 +1201,12 @@ const About = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                         {[
-                            { name: "Sita Kumari Sah", role: "Primary Coordinator", qual: "M.Ed in English", desc: "With 12 years of experience, she leads the linguistic foundation of our young scholars with passion.", img: "https://images.unsplash.com/photo-1544717297-fa15739a5447?q=80&w=2070&auto=format&fit=crop" },
-                            { name: "Pukar Mandal", role: "Sr. Administrator", qual: "MBA (Human Resources)", desc: "The operational backbone of New Concept, ensuring seamless academic management and student support.", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop" },
-                            { name: "K.D Sir", role: "Principal", qual: "M.A. (Ed. Admin)", desc: "A visionary leader focus on character building and institutional discipline.", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" },
-                            { name: "Anish Gupta", role: "ICT Instructor", qual: "B.Tech in CS", desc: "Bridging the gap between traditional learning and modern technology for our students.", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop" },
-                            { name: "Sunita Yadav", role: "Early Childhood Lead", qual: "B.Ed (Child Psych)", desc: "Specializes in play-based learning and cognitive development for Nursery students.", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" },
-                            { name: "Kavi Raj Jha", role: "Mathematics Dept.", qual: "M.Sc in Applied Math", desc: "Simplifying complex numbers into fun challenges for primary grade students.", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop" }
+                            { name: "Sita Kumari Sah", role: "Primary Coordinator", qual: "M.Ed in English", desc: "With 12 years of experience, she leads the linguistic foundation of our young scholars with passion.", img: "https://images.unsplash.com/photo-1544717297-fa15739a5447?q=80&w=2070&auto=format&fit=crop", localName: "faculty_sita.jpg" },
+                            { name: "Pukar Mandal", role: "Sr. Administrator", qual: "MBA (Human Resources)", desc: "The operational backbone of New Concept, ensuring seamless academic management and student support.", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop", localName: "faculty_pukar.jpg" },
+                            { name: "K.D Sir", role: "Principal", qual: "M.A. (Ed. Admin)", desc: "A visionary leader focus on character building and institutional discipline.", img: principalPortraitUrl, localName: "principal.jpg" }, 
+                            { name: "Anish Gupta", role: "ICT Instructor", qual: "B.Tech in CS", desc: "Bridging the gap between traditional learning and modern technology for our students.", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop", localName: "faculty_anish.jpg" },
+                            { name: "Sunita Yadav", role: "Early Childhood Lead", qual: "B.Ed (Child Psych)", desc: "Specializes in play-based learning and cognitive development for Nursery students.", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop", localName: "faculty_sunita.jpg" },
+                            { name: "Kavi Raj Jha", role: "Mathematics Dept.", qual: "M.Sc in Applied Math", desc: "Simplifying complex numbers into fun challenges for primary grade students.", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop", localName: "faculty_kaviraj.jpg" }
                         ].map((faculty, i) => (
                             <motion.div 
                                 key={i}
@@ -826,7 +1215,7 @@ const About = () => {
                                 className="group bg-white rounded-[50px] overflow-hidden shadow-premium border border-black/5 hover:border-accent transition-all"
                             >
                                 <div className="aspect-[4/5] relative overflow-hidden">
-                                     <img src={faculty.img} alt={faculty.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                     <img src={`/images/${faculty.localName}`} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = faculty.img; }} alt={faculty.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                      <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent"></div>
                                      <div className="absolute bottom-10 left-10 right-10">
                                          <div className="bg-accent text-primary px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest inline-block mb-3">
@@ -849,33 +1238,22 @@ const About = () => {
 };
 
 const Notices = () => {
+    const { notices, loading } = useSchoolData();
     const [selectedNotice, setSelectedNotice] = useState<any>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeFilter, setActiveFilter] = useState("All");
 
-    const notices = [
-        { 
-            date: "Baisakh 11, 2083", 
-            title: "Addmission Open Now", 
-            cat: "Enrollment",
-            desc: "Admit your child to become Young Mindset & Also Scholarship Available for poor family background. We care every child and Family."
-        },
-        { 
-            date: "Ashar, 2083", 
-            title: "First Term Exam", 
-            cat: "Test",
-            desc: "First Terminal Examination, first we test students weakness and then guide them by their performance. We track Student Activities & performance."
-        },
-        { 
-            date: "Kartik 10, 2083", 
-            title: "Holiday Announcement - Dashain Festival", 
-            cat: "Urgent",
-            desc: "In observance of the Dashain Festival, the school will remain closed for one week starting from Kartik 10th. We wish all our students, teachers, and their families a joyous and safe festival season filled with prosperity. Classes will resume following the standard timetable on Kartik 17th."
-        }
-    ];
+    const filteredNotices = notices.filter(n => {
+        const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              n.desc.toLowerCase().includes(searchQuery.toLowerCase());
+        if (activeFilter === "All") return matchesSearch;
+        return matchesSearch && n.cat.toLowerCase() === activeFilter.toLowerCase();
+    });
 
     return (
         <main className="pt-10 bg-light-bg min-h-screen pb-32">
              <section className="bg-primary pt-24 pb-48 text-white relative overflow-hidden text-center">
-                <div className="container mx-auto px-4 relative z-10 px-4">
+                <div className="container mx-auto px-4 relative z-10">
                     <h1 className="text-4xl md:text-8xl font-black mb-6 uppercase tracking-tighter italic">News & <br /><span className="text-accent underline decoration-white/10 decoration-8 underline-offset-10">Alerts.</span></h1>
                     <p className="text-white/60 max-w-xl mx-auto text-base md:text-lg font-medium">Synchronized updates directly from the administrative dispatch desk.</p>
                 </div>
@@ -886,11 +1264,24 @@ const Notices = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
                         <div className="flex bg-light-bg p-3 rounded-2xl border w-full max-w-md">
                             <Search size={22} className="text-primary/30 mx-3" />
-                            <input type="text" placeholder="Search archive..." className="bg-transparent border-none focus:ring-0 text-sm font-bold flex-1" />
+                            <input 
+                              type="text" 
+                              placeholder="Search archive..." 
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              className="bg-transparent border-none focus:ring-0 text-sm font-bold flex-1 focus:outline-none" 
+                            />
                         </div>
                         <div className="flex gap-4 overflow-x-auto w-full md:w-auto pb-2">
-                             {["All", "Exams", "Events", "Urgent"].map(f => (
-                                 <button key={f} className="px-6 py-2.5 rounded-full bg-light-bg text-[10px] font-black uppercase tracking-widest text-primary/40 hover:bg-accent hover:text-primary transition-all shrink-0">
+                             {["All", "Enrollment", "Test", "Holiday", "Urgent"].map(f => (
+                                 <button 
+                                   key={f} 
+                                   onClick={() => setActiveFilter(f)}
+                                   className={cn(
+                                     "px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border",
+                                     activeFilter === f ? "bg-accent text-primary border-accent" : "bg-light-bg text-primary/40 hover:bg-accent hover:text-primary hover:border-accent"
+                                   )}
+                                 >
                                      {f}
                                  </button>
                              ))}
@@ -898,26 +1289,46 @@ const Notices = () => {
                     </div>
                     
                     <div className="space-y-8">
-                        {notices.map((n, i) => (
-                            <div key={i} className="group p-8 rounded-[40px] hover:bg-light-bg border border-transparent hover:border-accent/20 transition-all flex flex-col md:flex-row justify-between items-center gap-8">
-                                <div className="flex flex-1 gap-8 items-center">
-                                    <div className="w-16 h-16 rounded-2xl bg-primary text-accent flex flex-col items-center justify-center shrink-0">
-                                        <span className="text-xs font-black leading-none">{n.date.split(' ')[1].replace(',', '')}</span>
-                                        <span className="text-[10px] uppercase font-black">{n.date.split(' ')[0]}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-accent text-[9px] font-black uppercase tracking-widest mb-1 block">{n.cat}</span>
-                                        <h4 className="text-2xl font-black text-primary tracking-tight">{n.title}</h4>
-                                    </div>
-                                </div>
-                                <button 
-                                    onClick={() => setSelectedNotice(n)}
-                                    className="bg-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-primary/10 hover:bg-primary hover:text-white transition-all shadow-sm flex items-center gap-3"
-                                >
-                                    <Eye size={16} /> View Details
-                                </button>
-                            </div>
-                        ))}
+                        {loading ? (
+                          <div className="space-y-4">
+                            {[1, 2].map((x) => (
+                              <div key={x} className="p-8 rounded-[40px] bg-light-bg/50 border animate-pulse flex flex-col md:flex-row gap-6 items-center justify-between">
+                                <div className="h-10 w-48 bg-black/5 rounded-xl"></div>
+                                <div className="h-10 w-24 bg-black/5 rounded-xl"></div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : filteredNotices.length === 0 ? (
+                          <div className="text-center py-20 bg-light-bg/30 rounded-[32px] border border-dashed text-primary/40 font-black">
+                            No notifications match the selected search criteria.
+                          </div>
+                        ) : (
+                          filteredNotices.map((n, i) => {
+                            const dateParts = n.date.split(' ');
+                            const day = dateParts[1] ? dateParts[1].replace(',', '') : 'Alert';
+                            const month = dateParts[0] || 'Notice';
+                            return (
+                              <div key={n.id || i} className="group p-8 rounded-[40px] hover:bg-light-bg border border-transparent hover:border-accent/20 transition-all flex flex-col md:flex-row justify-between items-center gap-8">
+                                  <div className="flex flex-1 gap-8 items-center">
+                                      <div className="w-16 h-16 rounded-2xl bg-primary text-accent flex flex-col items-center justify-center shrink-0">
+                                          <span className="text-xs font-black leading-none">{day}</span>
+                                          <span className="text-[10px] uppercase font-black">{month}</span>
+                                      </div>
+                                      <div>
+                                          <span className="text-accent text-[9px] font-black uppercase tracking-widest mb-1 block">{n.cat}</span>
+                                          <h4 className="text-2xl font-black text-primary tracking-tight">{n.title}</h4>
+                                      </div>
+                                  </div>
+                                  <button 
+                                      onClick={() => setSelectedNotice(n)}
+                                      className="bg-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-primary/10 hover:bg-primary hover:text-white transition-all shadow-sm flex items-center gap-3"
+                                  >
+                                      <Eye size={16} /> View Details
+                                  </button>
+                              </div>
+                            );
+                          })
+                        )}
                     </div>
                 </div>
             </div>
@@ -943,8 +1354,12 @@ const Notices = () => {
                                 <div className="flex justify-between items-start mb-10">
                                     <div className="flex gap-6 items-center">
                                         <div className="w-14 h-14 rounded-2xl bg-primary text-accent flex flex-col items-center justify-center shrink-0">
-                                            <span className="text-[10px] font-black leading-none">{selectedNotice.date.split(' ')[1].replace(',', '')}</span>
-                                            <span className="text-[8px] uppercase font-black">{selectedNotice.date.split(' ')[0]}</span>
+                                            <span className="text-[10px] font-black leading-none">
+                                                {selectedNotice.date.split(' ')[1] ? selectedNotice.date.split(' ')[1].replace(',', '') : 'Alert'}
+                                            </span>
+                                            <span className="text-[8px] uppercase font-black">
+                                                {selectedNotice.date.split(' ')[0] || 'Notice'}
+                                            </span>
                                         </div>
                                         <div>
                                             <span className="text-accent text-[9px] font-black uppercase tracking-widest mb-1 block">{selectedNotice.cat}</span>
@@ -988,13 +1403,18 @@ const Contact = () => {
                     </h1>
                     
                     <div className="space-y-12">
-                         <div className="flex gap-8 group">
-                            <div className="w-16 h-16 rounded-3xl bg-light-bg flex items-center justify-center text-accent group-hover:bg-primary transition-all shrink-0"><MapPin size={24} /></div>
+                         <a 
+                           href="https://www.google.com/maps/search/?api=1&query=New+Concept+English+Medium+Boarding+School,+Ekdara,+Mahottari"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="flex gap-8 group block"
+                         >
+                            <div className="w-16 h-16 rounded-3xl bg-light-bg flex items-center justify-center text-accent group-hover:bg-primary group-hover:text-accent transition-all shrink-0"><MapPin size={24} /></div>
                             <div>
-                                <h4 className="font-black text-primary mb-2 text-xl italic tracking-tight">Geo Location</h4>
-                                <p className="text-primary/60 text-lg leading-relaxed">Baheda, Ekdara-05, Mahottari, Madhesh Province Nepal.</p>
+                                <h4 className="font-black text-primary mb-2 text-xl italic tracking-tight flex items-center gap-2 group-hover:text-accent transition-colors">Geo Location <ExternalLink size={16} className="text-accent" /></h4>
+                                <p className="text-primary/60 text-lg leading-relaxed">Baheda, Ekdara-06, Mahottari, Madhesh Province Nepal.</p>
                             </div>
-                         </div>
+                         </a>
                          <div className="flex gap-8 group">
                             <div className="w-16 h-16 rounded-3xl bg-light-bg flex items-center justify-center text-accent group-hover:bg-primary transition-all shrink-0"><Phone size={24} /></div>
                             <div>
@@ -1005,15 +1425,25 @@ const Contact = () => {
                     </div>
                 </div>
                 
-                <div className="relative group">
+                <div className="relative group flex flex-col items-center">
                     <div className="absolute -inset-10 bg-accent/5 rounded-full blur-[100px]"></div>
-                    <div className="relative rounded-[60px] overflow-hidden shadow-3xl border-8 border-white bg-light-bg aspect-square">
+                    <div className="relative w-full rounded-[60px] overflow-hidden shadow-3xl border-8 border-white bg-light-bg aspect-square">
                         <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113941.56453916942!2d85.73684879726562!3d26.7388102!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ec427f7f0c111d%3A0x67303f8f7c9e054b!2sEkdara!5e0!3m2!1sen!2snp!4v1715959325432!5m2!1sen!2snp" 
-                            className="w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-700" 
-                            allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3564.931215431697!2d85.78204207613618!3d26.68752677002013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ec191716e45d2b%3A0xc2816934fa793984!2snew%20concept%20english%20medium%20boarding%20school!5e0!3m2!1sen!2snp!4v1716400000000!5m2!1sen!2snp"
+                            className="w-full h-full border-0 transition-all duration-700" 
+                            allowFullScreen 
+                            loading="lazy" 
+                            referrerPolicy="no-referrer-when-downgrade" 
                         />
                     </div>
+                    <a 
+                      href="https://www.google.com/maps/search/?api=1&query=New+Concept+English+Medium+Boarding+School,+Ekdara,+Mahottari" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="mt-8 inline-flex items-center gap-3 bg-accent text-primary px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                    >
+                      <MapPin size={16} /> Get Directions on Google Maps <ExternalLink size={14} />
+                    </a>
                 </div>
             </section>
 
@@ -1029,14 +1459,14 @@ const Contact = () => {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { name: "Pukar Mandal", role: "Sr. Administrator", phone: "+977-9824888046", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop" },
-                            { name: "Suman Kumar", role: "Admission Head", phone: "+977-9811122233", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop" },
-                            { name: "Anita Kumari", role: "Public Relations", phone: "+977-9811144455", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" },
-                            { name: "Vikram Shah", role: "Logistics Mgr", phone: "+977-9811166677", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop" }
+                            { name: "Pukar Mandal", role: "Sr. Administrator", phone: "+977-9817681582", img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop", localName: "outreach_pukar.jpg" },
+                            { name: "Suman Kumar", role: "Admission Head", phone: "+977-9817681582", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop", localName: "outreach_suman.jpg" },
+                            { name: "Anita Kumari", role: "Public Relations", phone: "+977-9817681582", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop", localName: "outreach_anita.jpg" },
+                            { name: "Vikram Shah", role: "Logistics Mgr", phone: "+977-9817681582", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop", localName: "outreach_vikram.jpg" }
                         ].map((person, i) => (
                             <div key={i} className="bg-white p-6 rounded-[32px] border border-black/5 hover:border-accent group transition-all">
                                 <div className="w-full aspect-square rounded-2xl overflow-hidden mb-6 grayscale group-hover:grayscale-0 transition-all duration-500">
-                                    <img src={person.img} className="w-full h-full object-cover group-hover:scale-105 transition-transform" alt={person.name} />
+                                    <img src={`/images/${person.localName}`} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = person.img; }} className="w-full h-full object-cover group-hover:scale-105 transition-transform" alt={person.name} />
                                 </div>
                                 <h4 className="text-lg font-black text-primary mb-1">{person.name}</h4>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-accent mb-4">{person.role}</p>
@@ -1064,25 +1494,28 @@ const ScrollToTop = () => {
 
 export default function App() {
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col selection:bg-accent selection:text-primary">
-        <ScrollToTop />
-        <Header />
-        <div className="flex-1">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/admissions" element={<Admissions />} />
-              <Route path="/academics" element={<Academics />} />
-              <Route path="/notices" element={<Notices />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/contact" element={<Contact />} />
-            </Routes>
-          </AnimatePresence>
+    <SchoolDataProvider>
+      <Router>
+        <div className="min-h-screen flex flex-col selection:bg-accent selection:text-primary">
+          <ScrollToTop />
+          <Header />
+          <div className="flex-1">
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/admissions" element={<Admissions />} />
+                <Route path="/academics" element={<Academics />} />
+                <Route path="/notices" element={<Notices />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/admin" element={<AdminPanel />} />
+              </Routes>
+            </AnimatePresence>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </Router>
+      </Router>
+    </SchoolDataProvider>
   );
 }
