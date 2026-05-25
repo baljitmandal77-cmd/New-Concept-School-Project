@@ -86,6 +86,18 @@ async function readSchoolInfo(): Promise<any> {
   const envUsername = process.env.ADMIN_USERNAME || "admin";
   const envPassword = process.env.ADMIN_PASSWORD || "Admin@Concept2083";
 
+  const defaultClasses = ["Nursery", "LKG", "UKG", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7"];
+  const defaultFees = defaultClasses.map(cls => ({
+    className: cls,
+    admissionFee: 0,
+    monthlyFee: 0,
+    examFee: 0,
+    computerFee: 0,
+    tcFee: 0,
+    marksheetFee: 0,
+    miscFee: 0
+  }));
+
   try {
     const data = await fs.readFile(DATA_FILE_PATH, "utf-8");
     const parsed = JSON.parse(data);
@@ -102,6 +114,10 @@ async function readSchoolInfo(): Promise<any> {
     } else if (!parsed.adminPassword) {
       parsed.adminPassword = envPassword;
     }
+
+    if (!parsed.fees || !Array.isArray(parsed.fees) || parsed.fees.length === 0) {
+      parsed.fees = defaultFees;
+    }
     
     return parsed;
   } catch (error) {
@@ -112,7 +128,7 @@ async function readSchoolInfo(): Promise<any> {
       tickerMessage: "New Admission Started for 2083 Session. Limited Scholarship Slots. * !!Admission Open!! * !!Admission Now!!",
       notices: [],
       drafts: [],
-      fees: [],
+      fees: defaultFees,
       admissions: []
     };
   }
@@ -345,6 +361,9 @@ app.put("/api/school-data/fees", verifyAdminToken, async (req, res) => {
       admissionFee: Math.max(0, parseInt(f.admissionFee, 10) || 0),
       monthlyFee: Math.max(0, parseInt(f.monthlyFee, 10) || 0),
       examFee: Math.max(0, parseInt(f.examFee, 10) || 0),
+      computerFee: Math.max(0, parseInt(f.computerFee, 10) || 0),
+      tcFee: Math.max(0, parseInt(f.tcFee, 10) || 0),
+      marksheetFee: Math.max(0, parseInt(f.marksheetFee, 10) || 0),
       miscFee: Math.max(0, parseInt(f.miscFee, 10) || 0)
     }));
     const ok = await writeSchoolInfo(info);
@@ -621,6 +640,14 @@ app.delete("/api/school-data/admissions/:id", verifyAdminToken, async (req, res)
 
 async function startServer() {
   await ensureDataPath();
+
+  // Pre-initialize and persist default fees array if empty
+  try {
+    const info = await readSchoolInfo();
+    await writeSchoolInfo(info);
+  } catch (err) {
+    console.error("Failed to pre-populate default fees on startup:", err);
+  }
 
   // Vite Integration
   if (process.env.NODE_ENV !== "production") {

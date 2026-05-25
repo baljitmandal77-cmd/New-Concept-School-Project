@@ -79,6 +79,7 @@ export default function AdminPanel() {
   const [noticeForm, setNoticeForm] = useState({ title: "", cat: "Enrollment", desc: "", date: "" });
 
   const [editableFees, setEditableFees] = useState<ClassFee[]>([]);
+  const [hasInitializedFees, setHasInitializedFees] = useState(false);
   const [feeStatus, setFeeStatus] = useState({ success: false, error: "", saving: false });
 
   const [tickerInput, setTickerInput] = useState("");
@@ -86,6 +87,34 @@ export default function AdminPanel() {
 
   const [passwordForm, setPasswordForm] = useState({ oldPassword: "", newUsername: "", newPassword: "", confirmPassword: "" });
   const [passwordStatus, setPasswordStatus] = useState({ success: false, error: "", saving: false });
+
+  // Custom confirmation modal and custom inline alert states to bypass iframe-blocked window.confirm / window.alert
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    message: string;
+    onConfirm: () => void | Promise<void>;
+  }>({
+    isOpen: false,
+    message: "",
+    onConfirm: () => {}
+  });
+
+  const [panelAlert, setPanelAlert] = useState<{
+    show: boolean;
+    message: string;
+    type: "error" | "success";
+  }>({
+    show: false,
+    message: "",
+    type: "success"
+  });
+
+  const showAlert = (message: string, type: "error" | "success" = "error") => {
+    setPanelAlert({ show: true, message, type });
+    setTimeout(() => {
+      setPanelAlert(prev => ({ ...prev, show: false }));
+    }, 4000);
+  };
 
   // Initializing or fetching Captcha
   const loadCaptcha = async () => {
@@ -106,16 +135,28 @@ export default function AdminPanel() {
     }
   }, [adminToken]);
 
-  // Sync latest when changing tabs explicitly OR when session loads to show current saved state
+  // Initialize local editable state copy once data is loaded (ignoring tab switches to prevent automatic overwriting)
   useEffect(() => {
     if (adminToken) {
-      if (activeTab === "fees") {
-        setEditableFees(JSON.parse(JSON.stringify(fees)));
-      } else if (activeTab === "ticker") {
+      if (!hasInitializedFees && fees && fees.length > 0) {
+        const sanitized = fees.map(f => ({
+          className: f.className,
+          admissionFee: f.admissionFee || 0,
+          monthlyFee: f.monthlyFee || 0,
+          examFee: f.examFee || 0,
+          computerFee: f.computerFee || 0,
+          tcFee: f.tcFee || 0,
+          marksheetFee: f.marksheetFee || 0,
+          miscFee: f.miscFee || 0
+        }));
+        setEditableFees(sanitized);
+        setHasInitializedFees(true);
+      }
+      if (!tickerInput && tickerMessage) {
         setTickerInput(tickerMessage);
       }
     }
-  }, [adminToken, activeTab]);
+  }, [adminToken, fees, tickerMessage, hasInitializedFees]);
 
   // Handle Admin Authorization
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -157,18 +198,32 @@ export default function AdminPanel() {
     }
   };
 
-  // Keep fees up-to-date with local modifications before saving
+  // Keep fees up-to-date with local modifications before saving (allows empty strings during typing)
   const handleFeeFieldChange = (index: number, field: keyof ClassFee, value: string) => {
-    const numericValue = Math.max(0, parseInt(value, 10) || 0);
+    const rawVal = value === "" ? "" : Math.max(0, parseInt(value, 10));
     const copy = [...editableFees];
-    copy[index] = { ...copy[index], [field]: numericValue };
+    copy[index] = { ...copy[index], [field]: rawVal as any };
     setEditableFees(copy);
   };
 
   const handleSaveFees = async () => {
     setFeeStatus({ success: false, error: "", saving: true });
-    const ok = await updateFees(editableFees);
+    // Normalize and sanitize fields into integers to prevent storing empty strings as final values
+    const sanitized = editableFees.map(f => ({
+      className: f.className,
+      admissionFee: Number(f.admissionFee) || 0,
+      monthlyFee: Number(f.monthlyFee) || 0,
+      examFee: Number(f.examFee) || 0,
+      computerFee: Number(f.computerFee) || 0,
+      tcFee: Number(f.tcFee) || 0,
+      marksheetFee: Number(f.marksheetFee) || 0,
+      miscFee: Number(f.miscFee) || 0
+    }));
+
+    const ok = await updateFees(sanitized);
     if (ok) {
+      // Keep local state in sync after saving
+      setEditableFees(sanitized);
       setFeeStatus({ success: true, error: "", saving: false });
       setTimeout(() => setFeeStatus(prev => ({ ...prev, success: false })), 3000);
     } else {
@@ -256,45 +311,70 @@ export default function AdminPanel() {
       setNoticeForm({ title: "", cat: "Enrollment", desc: "", date: "" });
       setEditingNotice(null);
       setIsDraftCheck(false);
+      showAlert("Notice saved successfully!", "success");
     } else {
-      alert("Failed to save notice. Authentication or validation checks failed.");
+      showAlert("Failed to save notice. Authentication or validation checks failed.", "error");
     }
   };
 
-  const handleDeleteNoticeClick = async (id: string) => {
-    if (window.confirm("Are you sure you want to permanently delete this live notice? This action is irreversible!")) {
-      const success = await deleteNotice(id);
-      if (!success) {
-        alert("Failed to delete notice. Operation failed or request unauthorized.");
+  const handleDeleteNoticeClick = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      message: "Are you sure you want to permanently delete this live notice? This action is irreversible!",
+      onConfirm: async () => {
+        const success = await deleteNotice(id);
+        if (success) {
+          showAlert("Live notice deleted successfully!", "success");
+        } else {
+          showAlert("Failed to delete notice. Operation failed or request unauthorized.", "error");
+        }
       }
-    }
+    });
   };
 
-  const handlePublishDraftClick = async (id: string) => {
-    if (window.confirm("Are you sure you want to Publish this notice live on the website?")) {
-      const success = await publishDraft(id);
-      if (!success) {
-        alert("Failed to publish draft notice.");
+  const handlePublishDraftClick = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      message: "Are you sure you want to Publish this notice live on the website?",
+      onConfirm: async () => {
+        const success = await publishDraft(id);
+        if (success) {
+          showAlert("Draft notice published live!", "success");
+        } else {
+          showAlert("Failed to publish draft notice.", "error");
+        }
       }
-    }
+    });
   };
 
-  const handleRevertToDraftClick = async (id: string) => {
-    if (window.confirm("Are you sure you want to Revert this live notice to a draft? It will be hidden from the public website.")) {
-      const success = await revertToDraft(id);
-      if (!success) {
-        alert("Failed to revert notice to draft.");
+  const handleRevertToDraftClick = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      message: "Are you sure you want to Revert this live notice to a draft? It will be hidden from the public website.",
+      onConfirm: async () => {
+        const success = await revertToDraft(id);
+        if (success) {
+          showAlert("Notice reverted to drafts successfully!", "success");
+        } else {
+          showAlert("Failed to revert notice to draft.", "error");
+        }
       }
-    }
+    });
   };
 
-  const handleDeleteDraftPermanentlyClick = async (id: string) => {
-    if (window.confirm("WARNING: This will permanently delete this notice draft forever from the database! Are you absolutely sure?")) {
-      const success = await deleteDraftPermanently(id);
-      if (!success) {
-        alert("Failed to delete draft permanently.");
+  const handleDeleteDraftPermanentlyClick = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      message: "WARNING: This will permanently delete this notice draft forever from the database! Are you absolutely sure?",
+      onConfirm: async () => {
+        const success = await deleteDraftPermanently(id);
+        if (success) {
+          showAlert("Draft notice deleted permanently!", "success");
+        } else {
+          showAlert("Failed to delete draft permanently.", "error");
+        }
       }
-    }
+    });
   };
 
   // If Not Authenticated, display High-Security Login Card with Bot Puzzle Captcha
@@ -644,64 +724,95 @@ export default function AdminPanel() {
                     </div>
                   )}
 
+                  {/* Unified Compact Responsive Ledger Table */}
                   <div className="overflow-x-auto rounded-[32px] border border-black/5 bg-white shadow-inner">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse min-w-[700px]">
                       <thead>
-                        <tr className="bg-primary text-white text-[10px] font-black uppercase tracking-widest border-none">
-                          <th className="p-5 font-black">Class Name</th>
-                          <th className="p-5 font-black">Admission Fee (NPR)</th>
-                          <th className="p-5 font-black">Monthly Tuition (NPR)</th>
-                          <th className="p-5 font-black">Exam Fee (NPR)</th>
-                          <th className="p-5 font-black">Misc Fee (NPR)</th>
-                          <th className="p-5 font-black">Summary (NPR)</th>
+                        <tr className="bg-primary text-white text-[10px] font-black uppercase tracking-wider border-none">
+                          <th className="p-3 text-center">Class</th>
+                          <th className="p-3 text-right">Admission</th>
+                          <th className="p-3 text-right">Monthly</th>
+                          <th className="p-3 text-right">Exam Fee</th>
+                          <th className="p-3 text-right">Computer</th>
+                          <th className="p-3 text-right">TC Fee</th>
+                          <th className="p-3 text-right">Marksheet</th>
+                          <th className="p-3 text-right">Misc Fee</th>
+                          <th className="p-3 text-right bg-accent text-primary">Summary (NPR)</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y text-xs font-bold text-primary/80">
                         {editableFees.map((fee, idx) => {
                           const classSum =
-                            (fee.admissionFee || 0) +
-                            (fee.monthlyFee || 0) +
-                            (fee.examFee || 0) +
-                            (fee.miscFee || 0);
+                            (Number(fee.admissionFee) || 0) +
+                            (Number(fee.monthlyFee) || 0) +
+                            (Number(fee.examFee) || 0) +
+                            (Number(fee.computerFee) || 0) +
+                            (Number(fee.tcFee) || 0) +
+                            (Number(fee.marksheetFee) || 0) +
+                            (Number(fee.miscFee) || 0);
 
                           return (
                             <tr key={idx} className="hover:bg-light-bg/50 transition-colors">
-                              <td className="p-5 font-black tracking-tight bg-light-bg/30 text-primary uppercase text-[11px] italic">
+                              <td className="p-3 font-black tracking-tight bg-light-bg/30 text-primary uppercase text-[11px] italic text-center whitespace-nowrap min-w-[70px]">
                                 {fee.className}
                               </td>
-                              <td className="p-4">
+                              <td className="p-1 px-1.5 min-w-[85px]">
                                 <input
                                   type="number"
-                                  value={fee.admissionFee}
+                                  value={fee.admissionFee === "" || fee.admissionFee === undefined ? "" : fee.admissionFee}
                                   onChange={(e) => handleFeeFieldChange(idx, "admissionFee", e.target.value)}
-                                  className="w-24 bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
+                                  className="w-full bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
                                 />
                               </td>
-                              <td className="p-4">
+                              <td className="p-1 px-1.5 min-w-[85px]">
                                 <input
                                   type="number"
-                                  value={fee.monthlyFee}
+                                  value={fee.monthlyFee === "" || fee.monthlyFee === undefined ? "" : fee.monthlyFee}
                                   onChange={(e) => handleFeeFieldChange(idx, "monthlyFee", e.target.value)}
-                                  className="w-24 bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
+                                  className="w-full bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
                                 />
                               </td>
-                              <td className="p-4">
+                              <td className="p-1 px-1.5 min-w-[85px]">
                                 <input
                                   type="number"
-                                  value={fee.examFee}
+                                  value={fee.examFee === "" || fee.examFee === undefined ? "" : fee.examFee}
                                   onChange={(e) => handleFeeFieldChange(idx, "examFee", e.target.value)}
-                                  className="w-24 bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
+                                  className="w-full bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
                                 />
                               </td>
-                              <td className="p-4">
+                              <td className="p-1 px-1.5 min-w-[85px]">
                                 <input
                                   type="number"
-                                  value={fee.miscFee}
-                                  onChange={(e) => handleFeeFieldChange(idx, "miscFee", e.target.value)}
-                                  className="w-24 bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
+                                  value={fee.computerFee === "" || fee.computerFee === undefined ? "" : fee.computerFee}
+                                  onChange={(e) => handleFeeFieldChange(idx, "computerFee", e.target.value)}
+                                  className="w-full bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
                                 />
                               </td>
-                              <td className="p-5 text-right font-black text-primary/50 tabular-nums">
+                              <td className="p-1 px-1.5 min-w-[85px]">
+                                <input
+                                  type="number"
+                                  value={fee.tcFee === "" || fee.tcFee === undefined ? "" : fee.tcFee}
+                                  onChange={(e) => handleFeeFieldChange(idx, "tcFee", e.target.value)}
+                                  className="w-full bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
+                                />
+                              </td>
+                              <td className="p-1 px-1.5 min-w-[85px]">
+                                <input
+                                  type="number"
+                                  value={fee.marksheetFee === "" || fee.marksheetFee === undefined ? "" : fee.marksheetFee}
+                                  onChange={(e) => handleFeeFieldChange(idx, "marksheetFee", e.target.value)}
+                                  className="w-full bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
+                                />
+                              </td>
+                              <td className="p-1 px-1.5 min-w-[85px]">
+                                <input
+                                  type="number"
+                                  value={fee.miscFee === "" || fee.miscFee === undefined ? "" : fee.miscFee}
+                                  onChange={(e) => handleFeeFieldChange(idx, "miscFee", e.target.value)}
+                                  className="w-full bg-light-bg/50 rounded-lg px-2 py-1.5 focus:outline-none focus:bg-white border focus:border-accent text-right font-black"
+                                />
+                              </td>
+                              <td className="p-3 text-right font-black text-primary bg-accent/15 tabular-nums min-w-[90px]">
                                 NPR {classSum.toLocaleString()}
                               </td>
                             </tr>
@@ -1086,10 +1197,19 @@ export default function AdminPanel() {
                                 </div>
 
                                 <button
-                                  onClick={async () => {
-                                    if (confirm(`Do you want to permanently delete admission request of ${req.studentName}?`)) {
-                                      await deleteAdmissionRequest(req.id);
-                                    }
+                                  onClick={() => {
+                                    setConfirmModal({
+                                      isOpen: true,
+                                      message: `Do you want to permanently delete admission request of ${req.studentName}?`,
+                                      onConfirm: async () => {
+                                        const success = await deleteAdmissionRequest(req.id);
+                                        if (success) {
+                                          showAlert("Admission request deleted successfully!", "success");
+                                        } else {
+                                          showAlert("Failed to delete admission request.", "error");
+                                        }
+                                      }
+                                    });
                                   }}
                                   className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2.5 rounded-xl transition-all"
                                   title="Delete Inquiry Permanently"
@@ -1125,12 +1245,12 @@ export default function AdminPanel() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-2xl bg-white z-[110] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-3xl border border-black/5"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto bg-white z-[110] rounded-[32px] md:rounded-[40px] shadow-3xl border border-black/5"
             >
-              <form onSubmit={handleNoticeFormSubmit} className="p-8 md:p-14 space-y-8">
-                <div className="flex justify-between items-center mb-6 border-b pb-6">
+              <form onSubmit={handleNoticeFormSubmit} className="p-6 md:p-10 space-y-6">
+                <div className="flex justify-between items-center mb-4 border-b pb-4">
                   <div>
-                    <h3 className="text-2xl font-black text-primary italic tracking-tight">
+                    <h3 className="text-xl md:text-2xl font-black text-primary italic tracking-tight">
                       {editingNotice ? "Edit notice details" : "Publish new announcement"}
                     </h3>
                     <p className="text-[10px] uppercase font-black text-primary/40 tracking-widest mt-1">
@@ -1140,14 +1260,14 @@ export default function AdminPanel() {
                   <button
                     type="button"
                     onClick={() => setIsNoticeModalOpen(false)}
-                    className="p-3 bg-light-bg rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors"
+                    className="p-2.5 bg-light-bg rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 block ml-2">
                       Notice Header / Title
                     </label>
@@ -1155,19 +1275,19 @@ export default function AdminPanel() {
                       type="text"
                       value={noticeForm.title}
                       onChange={(e) => setNoticeForm({ ...noticeForm, title: e.target.value })}
-                      className="w-full bg-light-bg border focus:border-accent ring-0 rounded-2xl px-5 py-4 focus:outline-none text-xs font-bold shadow-inner"
+                      className="w-full bg-light-bg border focus:border-accent ring-0 rounded-2xl px-5 py-3.5 focus:outline-none text-xs font-bold shadow-inner"
                       placeholder="e.g. Class Rescheduling"
                       required
                     />
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 block ml-2">
                       Category Class
                     </label>
                     <select
                       value={noticeForm.cat}
                       onChange={(e) => setNoticeForm({ ...noticeForm, cat: e.target.value })}
-                      className="w-full bg-light-bg border focus:border-accent ring-0 rounded-2xl px-5 py-4 focus:outline-none text-xs font-black shadow-inner appearance-none"
+                      className="w-full bg-light-bg border focus:border-accent ring-0 rounded-2xl px-5 py-3.5 focus:outline-none text-xs font-black shadow-inner appearance-none"
                     >
                       {["Enrollment", "Test", "Urgent", "Holiday", "Events"].map((cat) => (
                         <option key={cat} value={cat}>
@@ -1178,8 +1298,8 @@ export default function AdminPanel() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 block ml-2">
                       Custom Publish Date (Optional)
                     </label>
@@ -1187,28 +1307,28 @@ export default function AdminPanel() {
                       type="text"
                       value={noticeForm.date}
                       onChange={(e) => setNoticeForm({ ...noticeForm, date: e.target.value })}
-                      className="w-full bg-light-bg border focus:border-accent ring-0 rounded-2xl px-5 py-4 focus:outline-none text-xs font-bold shadow-inner"
+                      className="w-full bg-light-bg border focus:border-accent ring-0 rounded-2xl px-5 py-3.5 focus:outline-none text-xs font-bold shadow-inner"
                       placeholder="Default Current (e.g., Ashar, 2083)"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-primary/40 block ml-2">
                     Full Notice Body Details
                   </label>
                   <textarea
                     value={noticeForm.desc}
                     onChange={(e) => setNoticeForm({ ...noticeForm, desc: e.target.value })}
-                    rows={6}
-                    className="w-full bg-light-bg border focus:border-accent ring-0 rounded-[24px] p-6 focus:outline-none text-xs font-bold shadow-inner"
+                    rows={4}
+                    className="w-full bg-light-bg border focus:border-accent ring-0 rounded-[20px] p-5 focus:outline-none text-xs font-bold shadow-inner"
                     placeholder="Enter full notice descriptions and parent/staff guidance details here..."
                     required
                   />
                 </div>
 
                 {!editingNotice && (
-                  <div className="flex items-center gap-3 pl-2 py-1">
+                  <div className="flex items-center gap-3 pl-2 py-0.5">
                     <input
                       id="isDraftCheck"
                       type="checkbox"
@@ -1222,17 +1342,17 @@ export default function AdminPanel() {
                   </div>
                 )}
 
-                <div className="flex justify-end gap-3 pt-6 border-t font-semibold">
+                <div className="flex justify-end gap-3 pt-4 border-t font-semibold">
                   <button
                     type="button"
                     onClick={() => setIsNoticeModalOpen(false)}
-                    className="bg-light-bg text-primary px-8 py-4.5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black/5"
+                    className="bg-light-bg text-primary px-6 py-3.5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black/5"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="bg-primary text-white px-8 py-4.5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black"
+                    className="bg-primary text-white px-6 py-3.5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black"
                   >
                     {editingNotice ? "Enforce Edit changes" : isDraftCheck ? "Save as Draft" : "Launch Announcement"}
                   </button>
@@ -1240,6 +1360,99 @@ export default function AdminPanel() {
               </form>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* CUSTOM SECURE INLINE CONFIRMATION MODAL (Bypasses iframe security blocks on window.confirm) */}
+      <AnimatePresence>
+        {confirmModal.isOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+              className="fixed inset-0 bg-primary/80 backdrop-blur-md z-[200]"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white z-[210] rounded-[40px] p-8 md:p-10 shadow-3xl border border-black/5"
+            >
+              <div className="space-y-6 text-center">
+                <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto text-amber-500">
+                  <AlertCircle size={32} />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-black text-primary italic tracking-tight">Confirm Action</h3>
+                  <p className="text-sm text-primary/70 font-semibold leading-relaxed">
+                    {confirmModal.message}
+                  </p>
+                </div>
+                <div className="flex justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                    className="flex-1 bg-light-bg text-primary px-5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black/5 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const callback = confirmModal.onConfirm;
+                      setConfirmModal(prev => ({ ...prev, isOpen: false }));
+                      if (callback) {
+                        try {
+                          await callback();
+                        } catch (err) {
+                          console.error("Error executing confirm action:", err);
+                        }
+                      }
+                    }}
+                    className="flex-1 bg-primary text-white px-5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all"
+                  >
+                    Yes, Proceed
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* CUSTOM SECURE INLINE TOAST ALERT (Bypasses iframe security blocks on window.alert) */}
+      <AnimatePresence>
+        {panelAlert.show && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-6 right-6 z-[250] max-w-sm rounded-[24px] p-5 border shadow-2xl flex items-start gap-3 bg-white border-black/5"
+          >
+            <div className={`p-2 rounded-xl shrink-0 ${
+              panelAlert.type === "success" 
+                ? "bg-emerald-50 text-emerald-600" 
+                : "bg-red-50 text-red-600"
+            }`}>
+              {panelAlert.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-xs font-black uppercase tracking-wider text-primary">
+                {panelAlert.type === "success" ? "Success" : "Alert Notification"}
+              </h4>
+              <p className="text-xs text-primary/70 font-semibold leading-relaxed">
+                {panelAlert.message}
+              </p>
+            </div>
+            <button
+              onClick={() => setPanelAlert(prev => ({ ...prev, show: false }))}
+              className="text-primary/30 hover:text-primary transition-colors shrink-0 p-1"
+            >
+              <X size={16} />
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

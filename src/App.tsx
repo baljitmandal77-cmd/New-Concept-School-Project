@@ -100,63 +100,106 @@ const Header = () => {
   return (
     <header className="relative z-50">
       {/* Top Utility Bar */}
-      <div className="bg-primary text-white py-2 hidden md:block border-b border-white/10">
-        <div className="container mx-auto px-4 flex justify-between items-center text-[11px] font-bold uppercase tracking-widest">
-          <div className="flex items-center space-x-6">
-            <span className="flex items-center gap-2"><Phone size={12} className="text-accent" /> +977-9817681582</span>
-            <span className="flex items-center gap-2"><Phone size={12} className="text-accent" /> +977-9801671714</span>
-            <span className="flex items-center gap-2"><Mail size={12} className="text-accent" /> admissions@ncemhs.edu.np</span>
-            <span className="flex items-center gap-2"><MapPin size={12} className="text-accent" /> Baheda, Ekdara-6 Mahottari</span>
+      <div className="bg-[#0b223d] text-white/95 py-2.5 hidden md:block border-b border-white/5 shadow-sm">
+        <div className="container mx-auto px-6 flex justify-between items-center text-[11px] font-semibold uppercase tracking-[0.16em]">
+          <div className="flex items-center space-x-8">
+            <span className="flex items-center gap-2 hover:text-accent transition-colors duration-300">
+              <Phone size={12} className="text-accent" /> +977-9817681582
+            </span>
+            <span className="flex items-center gap-2 hover:text-accent transition-colors duration-300">
+              <Phone size={12} className="text-accent" /> +977-9801671714
+            </span>
+            <span className="flex items-center gap-2 hover:text-accent transition-colors duration-300">
+              <Mail size={12} className="text-accent" /> admissions@NCEMBS.edu.np
+            </span>
+            <span className="flex items-center gap-2 hover:text-accent transition-colors duration-300">
+              <MapPin size={12} className="text-accent" /> Baheda, Ekdara-6 Mahottari
+            </span>
           </div>
-          <div className="flex items-center space-x-4">
-            <a href="https://www.facebook.com/share/18tuMWYjma/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-facebook-f"></i></a>
-            <a href="#" className="hover:text-accent transition-colors"><i className="fa-brands fa-instagram"></i></a>
-            <a href="https://youtube.com/@newconceptenglishmediumboardin?si=fs_uWpWoGv6MVXHH" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-youtube"></i></a>
-            <a href="https://www.tiktok.com/@newconceptembschool?_r=1&_t=ZS-96UBP2WKLaS" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors"><i className="fa-brands fa-tiktok"></i></a>
+          <div className="flex items-center space-x-5 text-white/70">
+            <a href="https://www.facebook.com/share/18tuMWYjma/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-all hover:scale-110 duration-300" title="Facebook"><i className="fa-brands fa-facebook-f"></i></a>
+            <a href="#" className="hover:text-accent transition-all hover:scale-110 duration-300" title="Instagram"><i className="fa-brands fa-instagram"></i></a>
+            <a href="https://youtube.com/@newconceptenglishmediumboardin?si=fs_uWpWoGv6MVXHH" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-all hover:scale-110 duration-300" title="Youtube"><i className="fa-brands fa-youtube"></i></a>
+            <a href="https://www.tiktok.com/@newconceptembschool?_r=1&_t=ZS-96UBP2WKLaS" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-all hover:scale-110 duration-300" title="TikTok"><i className="fa-brands fa-tiktok"></i></a>
           </div>
         </div>
       </div>
 
       {/* Main Navbar */}
-      <nav className="bg-white/95 backdrop-blur-xl shadow-lg border-none sticky top-0 py-2 transition-all">
-        <div className="container mx-auto px-4 flex justify-between items-center border-none">
-          <Link to="/" className="flex items-center gap-3 transition-all">
-            <div className="w-16 h-16 md:w-24 md:h-24 flex items-center justify-center overflow-hidden transition-transform shrink-0">
-              <LogoImg className="w-full h-full object-contain mix-blend-multiply" />
-            </div>
-            <div className="flex flex-col justify-center">
-              <span className="text-xl md:text-2xl font-black uppercase tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                New Concept
-              </span>
-              <span className="text-[10px] md:text-xs font-black uppercase tracking-wider text-primary/65 block -mt-0.5 leading-tight">
-                English Medium Boarding School
-              </span>
-            </div>
-          </Link>
 
-          {/* Desktop Links */}
-          <div className="hidden lg:flex items-center space-x-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "px-4 py-2 text-[13px] font-bold uppercase tracking-widest transition-all rounded-lg hover:bg-light-bg hover:text-accent",
-                  pathname === link.path ? "text-accent bg-light-bg" : "text-primary/70"
-                )}
-              >
-                {link.name}
-              </Link>
+<nav className="bg-white/90 backdrop-blur-xl border-b border-black/[0.04] sticky top-0 py-3 transition-all duration-300 shadow-sm">
+
+<div className="container mx-auto px-6 flex justify-between items-center">
+
+<Link to="/" className="flex items-center gap-4 group">
+
+<div className="w-14 h-14 md:w-20 md:h-20 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105 shrink-0">
+
+<LogoImg className="w-full h-full object-contain mix-blend-multiply" />
+
+</div>
+
+<div className="flex flex-col justify-center">
+
+<span className="text-xl md:text-2xl font-black uppercase tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+
+New Concept
+
+</span>
+
+<span className="text-[9px] md:text-xs font-bold uppercase tracking-widest text-[#113a6c]/75 block -mt-0.5 leading-tight">
+
+English Medium Boarding School
+
+</span>
+
+</div>
+
+</Link>
+
+
+
+{/* Desktop Links */}
+
+<div className="hidden lg:flex items-center space-x-1">
+
+{navLinks.map((link) => (
+
+<Link
+
+key={link.path}
+
+to={link.path}
+
+className={cn(
+
+"px-4 py-2 text-[12px] font-bold uppercase tracking-widest transition-all duration-300 rounded-xl relative overflow-hidden",
+
+pathname === link.path
+
+? "text-primary bg-primary/[0.04] font-extrabold after:absolute after:bottom-0 after:left-4 after:right-4 after:h-0.5 after:bg-accent"
+
+: "text-primary/70 hover:text-primary hover:bg-black/[0.02]"
+
+)}
+
+>
+
+{link.name}
+
+</Link>
+
+
             ))}
-            <div className="w-[1px] h-8 bg-black/5 mx-4"></div>
-            <Link to="/admissions" className="bg-accent text-primary px-7 py-3 rounded-xl font-black text-[12px] uppercase tracking-widest shadow-premium hover:shadow-accent/20 hover:-translate-y-0.5 active:translate-y-0 transition-all">
+            <div className="w-[1px] h-6 bg-black/[0.08] mx-4"></div>
+            <Link to="/admissions" className="bg-[#ffb703] hover:bg-[#ffc93c] text-[#0d2c54] px-6 py-3 rounded-2xl font-black text-[12px] uppercase tracking-wider shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
               Apply Now
             </Link>
           </div>
 
           {/* Mobile Trigger */}
-          <button onClick={() => setIsOpen(true)} className="lg:hidden p-3 bg-light-bg rounded-xl text-primary border">
-            <MenuIcon size={24} />
+          <button onClick={() => setIsOpen(true)} className="lg:hidden p-3 bg-light-bg hover:bg-black/[0.03] rounded-2xl text-primary border border-black/[0.06] transition-all">
+            <MenuIcon size={20} />
           </button>
         </div>
       </nav>
@@ -170,52 +213,53 @@ const Header = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-primary/80 backdrop-blur-md z-[60]"
+              className="fixed inset-0 bg-[#0d2c54]/40 backdrop-blur-md z-[100]"
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[70] shadow-2xl p-8 overflow-y-auto"
+              transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[1110] shadow-2xl p-8 overflow-y-auto rounded-l-[40px] border-l border-black/5"
             >
-              <div className="flex justify-between items-center mb-12">
-                <div className="w-20 h-20 flex items-center justify-center overflow-hidden scale-110">
+              <div className="flex justify-between items-center mb-10">
+                <div className="w-16 h-16 flex items-center justify-center overflow-hidden">
                   <LogoImg className="w-full h-full object-contain mix-blend-multiply" />
                 </div>
-                <button onClick={() => setIsOpen(false)} className="p-3 bg-light-bg rounded-xl hover:bg-accent transition-colors">
-                  <X size={20} />
+                <button onClick={() => setIsOpen(false)} className="p-3 bg-light-bg/80 hover:bg-[#ffb703]/20 rounded-2xl hover:text-[#0d2c54] transition-colors">
+                  <X size={18} />
                 </button>
               </div>
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-1.5">
                 {navLinks.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      "text-xl font-black uppercase tracking-tight p-4 rounded-2xl transition-all",
-                      pathname === link.path ? "bg-accent text-primary" : "text-primary hover:bg-light-bg"
+                      "text-lg font-bold uppercase tracking-wider p-4 rounded-2xl transition-all",
+                      pathname === link.path ? "bg-[#ffb703]/20 text-[#0d2c54]" : "text-primary/85 hover:bg-light-bg"
                     )}
                   >
                     {link.name}
                   </Link>
                 ))}
-                <div className="pt-8">
-                   <Link to="/admissions" onClick={() => setIsOpen(false)} className="block bg-primary text-white p-5 rounded-2xl text-center font-black uppercase tracking-widest shadow-xl">
+                <div className="pt-6">
+                   <Link to="/admissions" onClick={() => setIsOpen(false)} className="block bg-[#0d2c54] text-white p-5 rounded-3xl text-center font-black uppercase tracking-widest shadow-xl hover:bg-black transition-all">
                     Online Enrollment
                   </Link>
                 </div>
               </div>
-              <div className="mt-20 pt-8 border-t">
-                <p className="text-[10px] font-bold text-primary/40 uppercase tracking-widest mb-4"></p>
+              <div className="mt-16 pt-8 border-t border-black/5">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-sm font-bold text-primary">
                     <Phone size={16} className="text-accent" /> 9817681582
+                  </div>
+                  <div className="flex items-center gap-3 text-sm font-bold text-primary">
                     <Phone size={16} className="text-accent" /> 9801671714
                   </div>
                   <div className="flex items-center gap-3 text-sm font-bold text-primary">
-                    <Mail size={16} className="text-accent" /> info@ncemhs.edu.np
+                    <Mail size={16} className="text-accent" /> info@NCEMBS.edu.np
                   </div>
                 </div>
               </div>
@@ -228,14 +272,16 @@ const Header = () => {
 };
 
 const SectionHeader = ({ badge, title, desc, centered = false }: { badge: string, title: string, desc?: string, centered?: boolean }) => (
-  <div className={cn("mb-12 md:mb-16", centered ? "text-center" : "text-left")}>
-    <span className="inline-block bg-accent/10 border border-accent/20 text-accent px-4 py-1.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest mb-4">
+  <div className={cn("mb-16 md:mb-20", centered ? "text-center max-w-3xl mx-auto" : "text-left")}>
+    <span className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-[#d97706] px-4 py-1 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest mb-5">
+      <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping duration-1000"></span>
       {badge}
     </span>
-    <h2 className={cn("text-3xl md:text-5xl font-black text-primary leading-tight tracking-tighter", centered && "mx-auto max-w-2xl")}>
+    <h2 className="text-3xl md:text-5xl font-black text-primary leading-tight tracking-tight relative pb-4">
       {title}
+      <span className={cn("absolute bottom-0 h-1 bg-accent rounded-full transition-all duration-500", centered ? "left-1/2 -translate-x-1/2 w-16" : "left-0 w-12")} />
     </h2>
-    {desc && <p className={cn("text-base md:text-lg text-primary/60 mt-4 md:mt-6 leading-relaxed", centered && "mx-auto max-w-2xl")}>{desc}</p>}
+    {desc && <p className="text-sm md:text-base text-primary/60 mt-6 leading-relaxed font-medium">{desc}</p>}
   </div>
 );
 
@@ -305,7 +351,7 @@ const Footer = () => {
             </li>
             <li className="flex gap-4">
               <Mail size={22} className="text-accent shrink-0" />
-              <span className="break-all">admissions@ncemhs.edu.np</span>
+              <span className="break-all">admissions@NCEMBS.edu.np</span>
             </li>
           </ul>
         </div>
@@ -346,74 +392,75 @@ const Home = () => {
   const { tickerMessage } = useSchoolData();
   return (
     <main>
-      {/* Emergency ticker */}
-      <div className="bg-red-600 text-white py-3 relative overflow-hidden whitespace-nowrap z-40">
-        <div className="flex gap-16 animate-ticker font-black text-[11px] uppercase tracking-[0.2em]">
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> {tickerMessage || 'Admission Open for 2083 Session!'}</span>
-          <span className="flex items-center gap-3"><Zap size={14} className="fill-current" /> {tickerMessage || 'Admission Open for 2083 Session!'}</span>
+      {/* Dynamic Emergency ticker */}
+      <div className="bg-[#b91c1c] text-white py-3.5 relative overflow-hidden whitespace-nowrap z-40 shadow-sm">
+        <div className="flex gap-20 animate-ticker font-black text-[11px] uppercase tracking-[0.22em] select-none">
+          <span className="flex items-center gap-3"><Zap size={13} className="fill-[#ffb703] text-[#ffb703] animate-pulse" /> {tickerMessage || 'Admission Open for 2083 Session!'}</span>
+          <span className="flex items-center gap-3"><Zap size={13} className="fill-[#ffb703] text-[#ffb703] animate-pulse" /> {tickerMessage || 'Admission Open for 2083 Session!'}</span>
         </div>
       </div>
 
       {/* Modern Hero */}
-      <section className="relative min-h-[90vh] lg:h-[95vh] flex items-center overflow-hidden bg-primary py-20 lg:py-0">
-         <div className="absolute inset-0 z-0">
-           <img 
-            src="/images/hero_banner.png" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = heroBannerUrl; }} 
-            className="w-full h-full object-cover opacity-30 mix-blend-luminosity scale-105" 
-            alt="School Banner"
-           />
-           <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent"></div>
-         </div>
-         
-         <div className="container mx-auto px-4 relative z-10">
-           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-4xl"
-           >
-             <div className="flex items-center gap-4 mb-6">
-               <span className="h-[2px] w-12 bg-accent"></span>
-               <span className="text-accent font-black uppercase tracking-[0.4em] text-[11px]">Ekdara's Top English Medium Hub</span>
-             </div>
-             
-             {/* Premium fancy styled School Name design in Hero area */}
-             <div className="mb-8 block">
-               <span className="text-4xl md:text-7xl font-sans font-black tracking-tight uppercase bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400 text-transparent bg-clip-text drop-shadow-[0_4px_12px_rgba(251,191,36,0.3)] block font-serif italic mb-2 select-none">
-                 New Concept
-               </span>
-               <span className="text-xs md:text-sm font-black tracking-[0.35em] text-accent uppercase block pl-2 selection:bg-accent/30 selection:text-white">
-                 English Medium Boarding School
-               </span>
-             </div>
+<section className="relative min-h-[92vh] lg:h-[95vh] flex items-center overflow-hidden bg-gradient-to-br from-[#0a1f33] via-[#0d2c54] to-[#123e72] py-24 lg:py-0">
+   <div className="absolute inset-0 z-0">
+     <img 
+      src="/images/hero_banner.png" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = heroBannerUrl; }} 
+      className="w-full h-full object-cover opacity-25 filter brightness-90 mix-blend-luminosity scale-105 transition-transform duration-[10s] hover:scale-100" 
+      alt="School Banner"
+     />
+     <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent"></div>
+   </div>
+   
+   <div className="container mx-auto px-4 relative z-10">
+     <motion.div 
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      className="max-w-4xl"
+     >
+       {/* Added padding top here to push down text away from top red ticker */}
+       <div className="flex items-center gap-4 pt-8 md:pt-12 mb-6">
+         <span className="h-[2px] w-12 bg-accent"></span>
+         <span className="text-accent font-black uppercase tracking-[0.3em] text-[10px] md:text-[11px] inline-flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#ffb703] animate-ping" /> Ekdara's Premier English Medium Hub</span>
+       </div>
+       
+       {/* Premium fancy styled School Name design in Hero area - Pushed down smoothly */}
+       <div className="mb-8 block mt-2 md:mt-4">
+         <span className="text-4xl md:text-8xl font-sans font-black tracking-tighter uppercase bg-gradient-to-r from-[#ffb703] via-[#ffdf7a] to-[#ffb703] text-transparent bg-clip-text drop-shadow-[0_4px_16px_rgba(255,183,3,0.2)] block leading-[0.95] select-none">
+           New Concept
+         </span>
+         <span className="text-xs md:text-sm font-black tracking-[0.3em] text-white/95 uppercase block pl-3 mt-4 selection:bg-accent/30 selection:text-white border-l-4 border-accent">
+           English Medium Boarding School
+         </span>
+       </div>
 
-             <h1 className="text-4xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter mb-10">
-               Empowering <br />
-               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-white italic">Young Minds.</span>
-             </h1>
-             <p className="text-lg md:text-2xl text-white/60 mb-10 lg:mb-14 max-w-2xl leading-relaxed font-medium">
-               Providing a world-class English medium foundation for children from Nursery to Grade 7 with a focus on holistic development and character building.
-             </p>
-             <div className="flex flex-col sm:flex-row gap-6">
-               <Link to="/admissions" className="bg-accent text-primary px-12 py-6 rounded-2xl font-black uppercase text-sm shadow-2xl hover:shadow-accent/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
-                 Start Admission <ArrowRight size={20} />
-               </Link>
-               <Link to="/gallery" className="bg-white/5 backdrop-blur-xl border border-white/10 px-12 py-6 rounded-2xl font-black uppercase text-sm text-white hover:bg-white/10 transition-all flex items-center justify-center gap-3">
-                 Inside Our School <Play size={18} />
-               </Link>
-             </div>
-           </motion.div>
-         </div>
-      </section>
+       <h1 className="text-4xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter mb-10">
+         Empowering <br />
+         <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-white italic">Young Minds.</span>
+       </h1>
+       <p className="text-lg md:text-2xl text-white/60 mb-10 lg:mb-14 max-w-2xl leading-relaxed font-medium">
+         Providing a world-class English medium foundation for children from Nursery to Grade 7 with a focus on holistic development and character building.
+       </p>
+       <div className="flex flex-col sm:flex-row gap-6">
+         <Link to="/admissions" className="bg-[#ffb703] hover:bg-[#ffc93c] text-[#0d2c54] px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-wider shadow-xl shadow-accent/10 hover:shadow-accent/25 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 duration-300">
+           Start Admission <ArrowRight size={18} />
+         </Link>
+         <Link to="/gallery" className="bg-white/5 backdrop-blur-xl border border-white/10 px-10 py-5 rounded-2xl font-black uppercase text-xs text-white hover:bg-white/10 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-3">
+           Virtual School Tour <Play size={16} className="fill-current text-[#ffb703]" />
+         </Link>
+       </div>
+     </motion.div>
+   </div>
+</section>
 
        {/* Hero Info Cards - Separated to prevent overlap */}
-       <section className="bg-primary pb-20 -mt-1 relative z-20">
+       <section className="bg-[#0d2c54] pb-24 -mt-1 relative z-20">
          <div className="container mx-auto px-4">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
              {[
-               { icon: <Shield size={24} />, title: "Secure School", desc: "24/7 CCTV & Security Monitoring" },
-               { icon: <Sparkles size={24} />, title: "Smart Classes", desc: "Interactive Audiovisual Education" },
-               { icon: <Users size={24} />, title: "Expert Teachers", desc: "1:10 Teacher-Student Ratio" }
+               { icon: <Shield size={22} className="text-red-400" />, title: "Secure School Environment", desc: "Rigorous 24/7 CCTV surveillance, biometric-verified student registers, and tight security protocols for complete peace of mind." },
+               { icon: <Sparkles size={22} className="text-amber-400 animate-pulse" />, title: "Smart AV Classrooms", desc: "Equipped with interactive audio-visual displays and modern computer interfaces to bring educational concepts to life." },
+               { icon: <Users size={22} className="text-blue-400" />, title: "Certified Expert Mentors", desc: "Our 1:10 teacher-student ratio guarantees deep personalization, ensuring no single mind is ever left behind." }
              ].map((card, i) => (
                <motion.div 
                  key={i}
@@ -421,11 +468,11 @@ const Home = () => {
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ delay: i * 0.15 }}
-                 className="bg-white/5 backdrop-blur-3xl p-8 md:p-10 rounded-[40px] border border-white/10 hover:bg-white/10 transition-all group"
+                 className="bg-white/[0.03] backdrop-blur-3xl p-8 md:p-10 rounded-[36px] border border-white/10 hover:border-accent/40 hover:bg-white/[0.06] hover:shadow-[0_22px_44px_-16px_rgba(0,0,0,0.3)] transition-all duration-300 group"
                >
-                 <div className="text-accent mb-6 group-hover:scale-110 transition-transform">{card.icon}</div>
-                 <h4 className="text-white font-black text-xl md:text-2xl mb-3 tracking-tight italic">{card.title}</h4>
-                 <p className="text-white/40 text-sm font-semibold leading-relaxed">{card.desc}</p>
+                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-accent/10 transition-all duration-300">{card.icon}</div>
+                 <h4 className="text-white font-black text-xl mb-3 tracking-tight">{card.title}</h4>
+                 <p className="text-white/55 text-xs font-medium leading-relaxed">{card.desc}</p>
                </motion.div>
              ))}
            </div>
@@ -436,7 +483,7 @@ const Home = () => {
       <section className="py-20 md:py-32 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4">
           <SectionHeader 
-            badge="EDUCATIONAL STRENGTH"
+            badge="EXCELLENCE SYSTEM"
             title="Why New Concept is Unique"
             desc="We don't just teach subjects; we architect futures with a blend of regional values and global innovation."
             centered
@@ -466,13 +513,13 @@ const Home = () => {
               <motion.div 
                 key={i}
                 whileHover={{ y: -10 }}
-                className="group relative h-[400px] md:h-[500px] rounded-[40px] md:rounded-[50px] overflow-hidden shadow-premium"
+                className="group relative h-[420px] md:h-[520px] rounded-[40px] overflow-hidden shadow-lg border border-black/5"
               >
                 <LocalImg localName={item.localName} fallback={item.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={item.title} />
-                <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 bg-gradient-to-t from-primary/95 via-primary/30 to-transparent">
-                   <h4 className="text-2xl font-black text-white mb-4 italic tracking-tight">{item.title}</h4>
-                   <p className="text-white/60 text-sm leading-relaxed mb-6">{item.desc}</p>
-                   <Link to="/about" className="text-accent text-xs font-black uppercase tracking-widest flex items-center gap-3">
+                <div className="absolute inset-x-0 bottom-0 p-8 md:p-12 bg-gradient-to-t from-primary/95 via-primary/45 to-transparent transition-opacity group-hover:via-primary/55 duration-300">
+                   <h4 className="text-2xl font-black text-white mb-3.5 tracking-tight block">{item.title}</h4>
+                   <p className="text-white/65 text-xs leading-relaxed mb-5 font-semibold">{item.desc}</p>
+                   <Link to="/about" className="text-accent hover:text-white text-xs font-black uppercase tracking-widest flex items-center gap-2 group-hover:translate-x-1.5 transition-all duration-300">
                      Explore More <ArrowRight size={14} />
                    </Link>
                 </div>
@@ -486,7 +533,7 @@ const Home = () => {
       <section className="py-32 bg-light-bg">
         <div className="container mx-auto px-4">
           <SectionHeader 
-            badge="Life at NCEMHS"
+            badge="Life at NCEMBS"
             title="Experience The Daily Journey"
             desc="Take a visual walk-through of a standard productive day at New Concept."
             centered
@@ -499,11 +546,11 @@ const Home = () => {
                { time: "01:00 PM", event: "Healthy Lunch Break", img: "https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=2048&auto=format&fit=crop", localName: "healthy_lunch.jpg" },
                { time: "02:30 PM", event: "Co-Curricular Clubs", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop", localName: "curricular_clubs.jpg" }
              ].map((node, i) => (
-               <div key={i} className="relative group rounded-[40px] overflow-hidden aspect-[4/5] shadow-lg">
+               <div key={i} className="relative group rounded-[36px] overflow-hidden aspect-[4/5] bg-slate-100 hover:shadow-xl transition-all duration-300">
                  <LocalImg localName={node.localName} fallback={node.img} className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-700" alt={node.event} />
-                 <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
-                   <span className="text-accent text-[11px] font-black uppercase tracking-widest mb-2 block">{node.time}</span>
-                   <h5 className="text-white font-bold text-lg">{node.event}</h5>
+                 <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-[#020617]/90 via-[#020617]/35 to-transparent transition-opacity group-hover:via-[#020617]/50 duration-300">
+                   <span className="text-[#ffb703] text-[10px] md:text-[11px] font-black uppercase tracking-widest mb-2 block">{node.time}</span>
+                   <h5 className="text-white font-black text-lg md:text-xl tracking-tight">{node.event}</h5>
                  </div>
                </div>
              ))}
@@ -525,7 +572,7 @@ const Home = () => {
                   alt="Principal" 
                  />
                  <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 p-5 md:p-8 bg-black/60 backdrop-blur-md rounded-2xl md:rounded-3xl border border-white/10">
-                    <h3 className="text-xl md:text-2xl font-black mb-1" style={{ color: '#0a7aff' }}>Mr. Kaushlendra Giri</h3>
+                    <h3 className="text-xl md:text-2xl font-black mb-1 bg-gradient-to-r from-[#ffb703] via-[#ffdf7a] to-[#ffb703] text-transparent bg-clip-text">Mr. Kaushlendra Giri</h3>
                     <p className="text-accent text-[9px] md:text-[10px] font-black uppercase tracking-widest">Academic Excellence Lead</p>
                  </div>
                </div>
@@ -648,7 +695,7 @@ const Admissions = () => {
                             <p className="text-white/60 text-sm mb-8 leading-relaxed font-medium">Our admission officers are available 10:00 AM - 04:00 PM (Sun-Fri) for offline queries.</p>
                             <div className="flex gap-4">
                                 <a href="tel:+9779817681582" className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center hover:bg-accent hover:text-primary transition-all"><Phone size={24} /></a>
-                                <a href="mailto:info@ncemhs.edu.np" className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center hover:bg-accent hover:text-primary transition-all"><Mail size={24} /></a>
+                                <a href="mailto:info@NCEMBS.edu.np" className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center hover:bg-accent hover:text-primary transition-all"><Mail size={24} /></a>
                             </div>
                          </div>
                       </div>
@@ -778,35 +825,51 @@ const Admissions = () => {
                                 Fee schedules are undergoing yearly administration revisions. Please check back soon or consult offline admissions details.
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="bg-primary text-white text-[10px] font-black uppercase tracking-widest border-none">
-                                            <th className="p-6 md:p-8">Class Name</th>
-                                            <th className="p-6 md:p-8 text-right">Admission Fee (NPR)</th>
-                                            <th className="p-6 md:p-8 text-right">Monthly Tuition (NPR)</th>
-                                            <th className="p-6 md:p-8 text-right">Exam Fee (NPR)</th>
-                                            <th className="p-6 md:p-8 text-right">Misc Fee (NPR)</th>
-                                            <th className="p-6 md:p-8 text-right bg-accent text-primary">Total Est. (NPR)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-black/5">
-                                        {fees.map((f, i) => {
-                                            const rowTotal = (f.admissionFee || 0) + (f.monthlyFee || 0) + (f.examFee || 0) + (f.miscFee || 0);
-                                            return (
-                                                <tr key={i} className="hover:bg-light-bg/50 transition-colors font-bold text-sm text-primary">
-                                                    <td className="p-6 md:p-8 font-black uppercase tracking-tight text-primary/80">{f.className}</td>
-                                                    <td className="p-6 md:p-8 text-right">Rs. {f.admissionFee?.toLocaleString() || 0}</td>
-                                                    <td className="p-6 md:p-8 text-right">Rs. {f.monthlyFee?.toLocaleString() || 0}</td>
-                                                    <td className="p-6 md:p-8 text-right">Rs. {f.examFee?.toLocaleString() || 0}</td>
-                                                    <td className="p-6 md:p-8 text-right">Rs. {f.miscFee?.toLocaleString() || 0}</td>
-                                                    <td className="p-6 md:p-8 text-right bg-accent/25 text-primary font-black font-mono">Rs. {rowTotal.toLocaleString()}</td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                            <>
+                                {/* Unified Compact Responsive Ledger Table */}
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse min-w-[700px]">
+                                        <thead>
+                                            <tr className="bg-primary text-white text-[10px] font-black uppercase tracking-wider border-none">
+                                                <th className="p-4 text-center">Class</th>
+                                                <th className="p-3 text-right">Admission</th>
+                                                <th className="p-3 text-right">Monthly</th>
+                                                <th className="p-3 text-right">Exam Fee</th>
+                                                <th className="p-3 text-right">Computer</th>
+                                                <th className="p-3 text-right">TC Fee</th>
+                                                <th className="p-3 text-right">Marksheet</th>
+                                                <th className="p-3 text-right">Misc Fee</th>
+                                                <th className="p-4 text-right bg-accent text-primary">Summary (NPR)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-black/5 text-xs font-bold text-primary">
+                                            {fees.map((f, i) => {
+                                                const rowTotal = 
+                                                    (f.admissionFee || 0) + 
+                                                    (f.monthlyFee || 0) + 
+                                                    (f.examFee || 0) + 
+                                                    (f.computerFee || 0) + 
+                                                    (f.tcFee || 0) + 
+                                                    (f.marksheetFee || 0) + 
+                                                    (f.miscFee || 0);
+                                                return (
+                                                    <tr key={i} className="hover:bg-light-bg/50 transition-colors">
+                                                        <td className="p-4 font-black uppercase tracking-tight text-primary/80 text-center bg-light-bg/30 min-w-[70px]">{f.className}</td>
+                                                        <td className="p-3 text-right">Rs. {f.admissionFee?.toLocaleString() || 0}</td>
+                                                        <td className="p-3 text-right">Rs. {f.monthlyFee?.toLocaleString() || 0}</td>
+                                                        <td className="p-3 text-right">Rs. {f.examFee?.toLocaleString() || 0}</td>
+                                                        <td className="p-3 text-right">Rs. {f.computerFee?.toLocaleString() || 0}</td>
+                                                        <td className="p-3 text-right">Rs. {f.tcFee?.toLocaleString() || 0}</td>
+                                                        <td className="p-3 text-right">Rs. {f.marksheetFee?.toLocaleString() || 0}</td>
+                                                        <td className="p-3 text-right">Rs. {f.miscFee?.toLocaleString() || 0}</td>
+                                                        <td className="p-4 text-right bg-accent/15 text-primary font-black font-mono">Rs. {rowTotal.toLocaleString()}</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
                         )}
                         <div className="p-8 md:p-12 bg-light-bg/40 border-t border-black/5 text-center text-[10px] font-bold text-primary/40 uppercase tracking-widest">
                             * Exam fees are structured per terminal schedule. Books and uniform expenditures are calculated separately at local stationery indices.
@@ -1348,11 +1411,11 @@ const Notices = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-2xl bg-white z-[110] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-3xl"
+                            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto bg-white z-[110] rounded-[32px] md:rounded-[40px] shadow-3xl"
                         >
-                            <div className="p-8 md:p-16">
-                                <div className="flex justify-between items-start mb-10">
-                                    <div className="flex gap-6 items-center">
+                            <div className="p-6 md:p-12">
+                                <div className="flex justify-between items-start mb-8 gap-4">
+                                    <div className="flex gap-4 md:gap-6 items-center flex-1 min-w-0">
                                         <div className="w-14 h-14 rounded-2xl bg-primary text-accent flex flex-col items-center justify-center shrink-0">
                                             <span className="text-[10px] font-black leading-none">
                                                 {selectedNotice.date.split(' ')[1] ? selectedNotice.date.split(' ')[1].replace(',', '') : 'Alert'}
@@ -1361,22 +1424,22 @@ const Notices = () => {
                                                 {selectedNotice.date.split(' ')[0] || 'Notice'}
                                             </span>
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <span className="text-accent text-[9px] font-black uppercase tracking-widest mb-1 block">{selectedNotice.cat}</span>
-                                            <h3 className="text-3xl font-black text-primary tracking-tighter italic leading-tight">{selectedNotice.title}</h3>
+                                            <h3 className="text-xl md:text-3xl font-black text-primary tracking-tighter italic leading-tight break-words">{selectedNotice.title}</h3>
                                         </div>
                                     </div>
-                                    <button onClick={() => setSelectedNotice(null)} className="p-3 bg-light-bg rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors">
-                                        <X size={24} />
+                                    <button onClick={() => setSelectedNotice(null)} className="p-2.5 bg-light-bg rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors shrink-0">
+                                        <X size={20} />
                                     </button>
                                 </div>
-                                <div className="bg-light-bg p-8 md:p-12 rounded-[40px] border border-black/5 whitespace-pre-line text-primary/70 leading-relaxed font-medium">
+                                <div className="bg-light-bg p-6 md:p-10 rounded-[24px] md:rounded-[32px] border border-black/5 whitespace-pre-line text-primary/70 text-sm md:text-base leading-relaxed font-semibold break-words max-h-[50vh] overflow-y-auto select-text">
                                     {selectedNotice.desc}
                                 </div>
-                                <div className="mt-12 flex justify-end">
+                                <div className="mt-8 flex justify-end">
                                     <button 
                                         onClick={() => setSelectedNotice(null)}
-                                        className="bg-primary text-white px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-accent hover:text-primary transition-all"
+                                        className="bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-black transition-all"
                                     >
                                         Close Notice
                                     </button>
@@ -1391,6 +1454,30 @@ const Notices = () => {
 };
 
 const Contact = () => {
+    const [showMapModal, setShowMapModal] = useState(false);
+    const [copiedLink, setCopiedLink] = useState(false);
+    const [copiedAddress, setCopiedAddress] = useState(false);
+
+    const mapUrl = "https://www.google.com/maps/place/new+concept+english+medium+boarding+school/@26.6875899,85.7820387,652m/data=!3m2!1e3!4b1!4m6!3m5!1s0xa1c5191716e45d2b:0xc2816e34fadd3984!8m2!3d26.6875899!4d85.7846136!16s%2Fg%2F11xnn_j95c?entry=ttu&g_ep=EgoyMDI2MDUyMC4wIKXMDSoASAFQAw%3D%3D";
+    const fallbackUrl = "https://www.google.com/maps/dir//New+Concept+English+Medium+Boarding+School,+Mahottari";
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(mapUrl);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+    };
+
+    const handleCopyAddress = () => {
+        navigator.clipboard.writeText("New Concept English Medium Boarding School, Baheda, Ekdara-6, Mahottari, Madhesh Province, Nepal");
+        setCopiedAddress(true);
+        setTimeout(() => setCopiedAddress(false), 2000);
+    };
+
+    const handleMapTrigger = (e: React.MouseEvent) => {
+        // Double-action: open direct link first, then show helper in case of popups blocked inside iframe sandbox
+        setShowMapModal(true);
+    };
+
     return (
         <main className="pt-10 bg-white">
             <section className="container mx-auto px-4 py-24 grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
@@ -1403,18 +1490,16 @@ const Contact = () => {
                     </h1>
                     
                     <div className="space-y-12">
-                         <a 
-                           href="https://www.google.com/maps/search/?api=1&query=New+Concept+English+Medium+Boarding+School,+Ekdara,+Mahottari"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           className="flex gap-8 group block"
+                         <div 
+                           onClick={() => setShowMapModal(true)}
+                           className="flex gap-8 group cursor-pointer"
                          >
                             <div className="w-16 h-16 rounded-3xl bg-light-bg flex items-center justify-center text-accent group-hover:bg-primary group-hover:text-accent transition-all shrink-0"><MapPin size={24} /></div>
                             <div>
                                 <h4 className="font-black text-primary mb-2 text-xl italic tracking-tight flex items-center gap-2 group-hover:text-accent transition-colors">Geo Location <ExternalLink size={16} className="text-accent" /></h4>
                                 <p className="text-primary/60 text-lg leading-relaxed">Baheda, Ekdara-06, Mahottari, Madhesh Province Nepal.</p>
                             </div>
-                         </a>
+                         </div>
                          <div className="flex gap-8 group">
                             <div className="w-16 h-16 rounded-3xl bg-light-bg flex items-center justify-center text-accent group-hover:bg-primary transition-all shrink-0"><Phone size={24} /></div>
                             <div>
@@ -1426,7 +1511,7 @@ const Contact = () => {
                 </div>
                 
                 <div className="relative group flex flex-col items-center">
-                    <div className="absolute -inset-10 bg-accent/5 rounded-full blur-[100px]"></div>
+                    <div className="absolute -inset-10 bg-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
                     <div className="relative w-full rounded-[60px] overflow-hidden shadow-3xl border-8 border-white bg-light-bg aspect-square">
                         <iframe 
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3564.931215431697!2d85.78204207613618!3d26.68752677002013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ec191716e45d2b%3A0xc2816934fa793984!2snew%20concept%20english%20medium%20boarding%20school!5e0!3m2!1sen!2snp!4v1716400000000!5m2!1sen!2snp"
@@ -1437,15 +1522,122 @@ const Contact = () => {
                         />
                     </div>
                     <a 
-                      href="https://www.google.com/maps/search/?api=1&query=New+Concept+English+Medium+Boarding+School,+Ekdara,+Mahottari" 
-                      target="_blank" 
+                      href={mapUrl}
+                      target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-8 inline-flex items-center gap-3 bg-accent text-primary px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                      onClick={(e) => {
+                        // Triggers the help modal simultaneously so details are readily accessible if browser blocks target blank popup windows inside iframes
+                        setShowMapModal(true);
+                      }}
+                      className="mt-8 inline-flex items-center gap-3 bg-accent text-primary px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer text-center"
                     >
                       <MapPin size={16} /> Get Directions on Google Maps <ExternalLink size={14} />
                     </a>
                 </div>
             </section>
+
+            {/* CUSTOM MAP REDIRECT HELPER MODAL (Bypasses iframe sandboxing pop-up blocker securely) */}
+            <AnimatePresence>
+                {showMapModal && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowMapModal(false)}
+                            className="fixed inset-0 bg-primary/80 backdrop-blur-md z-[500]"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-lg bg-white z-[510] rounded-[32px] md:rounded-[40px] p-8 shadow-3xl border border-black/5 overflow-hidden"
+                        >
+                            <div className="flex justify-between items-start mb-6 border-b pb-6">
+                                <div>
+                                    <h3 className="text-xl md:text-2xl font-black text-primary italic tracking-tight">Google Maps Services</h3>
+                                    <p className="text-[10px] uppercase font-black text-[#ffb703] tracking-widest mt-1">
+                                        Navigate to our Administrative School
+                                    </p>
+                                </div>
+                                <button 
+                                    onClick={() => setShowMapModal(false)} 
+                                    className="p-2.5 bg-light-bg rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            <p className="text-sm text-primary/70 font-semibold mb-6 leading-relaxed">
+                                Since this application runs in a sandboxed preview environment, some browsers block direct pop-up redirects. Please use one of the reliable methods below:
+                            </p>
+
+                            <div className="space-y-4 font-semibold">
+                                {/* Option 1: Open Direct Link */}
+                                <a 
+                                    href= {mapUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-between w-full p-4.5 bg-[#0a7aff]/5 hover:bg-[#0a7aff]/10 border border-[#0a7aff]/10 rounded-2xl transition-all text-primary"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-[#0a7aff] text-white flex items-center justify-center shrink-0">
+                                            <ExternalLink size={18} />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="text-xs uppercase font-black text-[#0a7aff] tracking-wider">Method 1</p>
+                                            <h5 className="text-sm font-black text-primary">Open in new window</h5>
+                                        </div>
+                                    </div>
+                                    <ArrowRight size={16} className="text-[#0a7aff]" />
+                                </a>
+
+                                {/* Option 2: Direction route */}
+                                <a 
+                                    href={fallbackUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-between w-full p-4.5 bg-[#34c759]/5 hover:bg-[#34c759]/10 border border-[#34c759]/10 rounded-2xl transition-all text-primary"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-[#34c759] text-white flex items-center justify-center shrink-0">
+                                            <MapPin size={18} />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="text-xs uppercase font-black text-[#34c759] tracking-wider">Method 2</p>
+                                            <h5 className="text-sm font-black text-primary">Get Driving Directions</h5>
+                                        </div>
+                                    </div>
+                                    <ArrowRight size={16} className="text-[#34c759]" />
+                                </a>
+
+                                {/* Option 3: Copy direct coordinates / link */}
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <button 
+                                        onClick={handleCopyLink}
+                                        className="flex flex-col items-center justify-center p-4 bg-light-bg rounded-2xl border hover:border-accent hover:bg-accent/5 transition-all gap-1.5 cursor-pointer"
+                                    >
+                                        <span className="text-[9px] uppercase font-black text-primary/40 tracking-wider">Map CID Link</span>
+                                        <span className="text-xs font-black text-primary flex items-center gap-1.5">
+                                            {copiedLink ? <span className="text-[#34c759]">Copied!</span> : "Copy Shared URL"}
+                                        </span>
+                                    </button>
+
+                                    <button 
+                                        onClick={handleCopyAddress}
+                                        className="flex flex-col items-center justify-center p-4 bg-light-bg rounded-2xl border hover:border-accent hover:bg-accent/5 transition-all gap-1.5 cursor-pointer"
+                                    >
+                                        <span className="text-[9px] uppercase font-black text-primary/40 tracking-wider">Camp Address</span>
+                                        <span className="text-xs font-black text-primary flex items-center gap-1.5">
+                                            {copiedAddress ? <span className="text-[#34c759]">Copied!</span> : "Copy Location"}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
 
             {/* Personnel Section */}
             <section className="py-32 bg-light-bg">

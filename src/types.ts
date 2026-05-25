@@ -15,6 +15,9 @@ export interface ClassFee {
   admissionFee: number;
   monthlyFee: number;
   examFee: number;
+  computerFee: number;
+  tcFee: number;
+  marksheetFee: number;
   miscFee: number;
 }
 
