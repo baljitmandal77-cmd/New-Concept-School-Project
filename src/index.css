@@ -6,33 +6,47 @@
   
   --color-primary: #0d2c54; /* Deep Authority Navy */
   --color-accent: #ffb703;   /* Premium Amber Gold */
-  --color-light-bg: #f7fafc; /* High-contrast soft gray */
-  --color-dark: #1a202c;
+  --color-light-bg: #041426; /* Deep celestial dark-blue */
+  --color-dark: #f8fafc;     /* Premium soft white/slate-gray text */
   
-  --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-luxe: 0 20px 45px -15px rgba(0, 0, 0, 0.55), 0 15px 25px -10px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 40px rgba(255, 183, 3, 0.2);
 }
 
 @layer base {
   body {
-    @apply bg-light-bg text-dark font-sans antialiased;
+    @apply bg-[#030c17] text-slate-100 font-sans antialiased selection:bg-accent selection:text-primary;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply text-primary font-bold tracking-tight;
+    @apply text-white font-extrabold tracking-tight;
   }
 
   .glass-effect {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
+    @apply bg-[#030c17]/60 backdrop-blur-xl border border-white/10 shadow-premium;
+  }
+
+  .double-border {
+    @apply border border-white/10 outline outline-4 outline-white/5 shadow-premium;
+  }
+
+  .double-border-hover {
+    @apply hover:border-accent/40 hover:outline-accent/10 transition-all duration-500 shadow-premium hover:shadow-glow;
+  }
+
+  .radial-mesh {
+    @apply bg-[#030c17];
   }
 }
 
 @keyframes ticker {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .animate-ticker {
-  animation: ticker 30s linear infinite;
+  animation: ticker 25s linear infinite;
 }
 
 @keyframes pulse-soft {

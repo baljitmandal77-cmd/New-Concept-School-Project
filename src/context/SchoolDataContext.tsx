@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Notice, ClassFee, AdmissionRequest, SchoolDataPayload, SchoolDataContextType } from "../types";
+import { Notice, ClassFee, AdmissionRequest, SchoolDataPayload, SchoolDataContextType, WebsiteContent, SchoolNotification } from "../types";
 
 export const SchoolDataContext = createContext<SchoolDataContextType | undefined>(undefined);
 
@@ -16,7 +16,12 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
   const [notices, setNotices] = useState<Notice[]>([]);
   const [drafts, setDrafts] = useState<Notice[]>([]);
   const [fees, setFees] = useState<ClassFee[]>([]);
+  const [monthlyFeeCategories, setMonthlyFeeCategories] = useState<string[]>(["monthlyFee", "computerFee", "transportationFee"]);
+  const [yearlyFeeCategories, setYearlyFeeCategories] = useState<string[]>(["admissionFee", "examFee", "miscFee"]);
   const [admissions, setAdmissions] = useState<AdmissionRequest[]>([]);
+  const [websiteContent, setWebsiteContent] = useState<WebsiteContent | null>(null);
+  const [adminNotifications, setAdminNotifications] = useState<SchoolNotification[]>([]);
+  const [publicNotifications, setPublicNotifications] = useState<SchoolNotification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [adminToken, setAdminToken] = useState<string | null>(() => {
     return localStorage.getItem("nc_admin_token");
@@ -38,12 +43,19 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
       // Add a timestamp cache-buster query parameter to force fetching fresh data bypassing browser caching
       const res = await fetch(`/api/school-data?t=${Date.now()}`);
       if (!res.ok) throw new Error("Connection failed");
-      const data: Omit<SchoolDataPayload, "adminPassword"> = await res.json();
+      const data: SchoolDataPayload = await res.json();
       setTickerMessage(data.tickerMessage || "");
       setNotices(data.notices || []);
       setDrafts(data.drafts || []);
       setFees(data.fees || []);
+      setMonthlyFeeCategories(data.monthlyFeeCategories || ["monthlyFee", "computerFee", "transportationFee"]);
+      setYearlyFeeCategories(data.yearlyFeeCategories || ["admissionFee", "examFee", "miscFee"]);
       setAdmissions(data.admissions || []);
+      if (data.websiteContent) {
+        setWebsiteContent(data.websiteContent);
+      }
+      setAdminNotifications(data.adminNotifications || []);
+      setPublicNotifications(data.publicNotifications || []);
     } catch (error) {
       console.error("Error loading school data:", error);
     } finally {
@@ -75,9 +87,8 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
     init();
   }, []);
 
-  // Real-time silent polling when admin session is active
+  // Real-time silent polling when active
   useEffect(() => {
-    if (!adminToken) return;
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/school-data?t=${Date.now()}`);
@@ -88,11 +99,16 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
           setDrafts(data.drafts || []);
           setFees(data.fees || []);
           setAdmissions(data.admissions || []);
+          if (data.websiteContent) {
+            setWebsiteContent(data.websiteContent);
+          }
+          setAdminNotifications(data.adminNotifications || []);
+          setPublicNotifications(data.publicNotifications || []);
         }
       } catch (err) {
         console.error("Silent poll failed:", err);
       }
-    }, 6000); // Poll every 6 seconds for extreme fast, lightweight UI reactivity
+    }, adminToken ? 6000 : 12000); // Poll every 6s for admin, 12s for guest users to fetch fresh notices/notifications
 
     return () => clearInterval(interval);
   }, [adminToken]);
@@ -125,7 +141,11 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
   };
 
   // Update Fees schedule
-  const updateFees = async (updatedFees: ClassFee[]): Promise<boolean> => {
+  const updateFees = async (
+    updatedFees: ClassFee[],
+    monthlyCategories?: string[],
+    yearlyCategories?: string[]
+  ): Promise<boolean> => {
     try {
       const res = await fetch("/api/school-data/fees", {
         method: "PUT",
@@ -133,7 +153,11 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
           "Content-Type": "application/json",
           Authorization: `Bearer ${adminToken || ""}`
         },
-        body: JSON.stringify({ fees: updatedFees })
+        body: JSON.stringify({
+          fees: updatedFees,
+          monthlyFeeCategories: monthlyCategories,
+          yearlyFeeCategories: yearlyCategories
+        })
       });
       if (res.status === 401) {
         setAdminTokenState(null);
@@ -142,11 +166,40 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
       }
       if (res.ok) {
         setFees(updatedFees);
+        if (monthlyCategories) setMonthlyFeeCategories(monthlyCategories);
+        if (yearlyCategories) setYearlyFeeCategories(yearlyCategories);
         return true;
       }
       return false;
     } catch (err) {
       console.error(err);
+      return false;
+    }
+  };
+
+  // Update Website Content Layout
+  const updateWebsiteContent = async (updatedContent: WebsiteContent): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/school-data/website-content", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken || ""}`
+        },
+        body: JSON.stringify(updatedContent)
+      });
+      if (res.status === 401) {
+        setAdminTokenState(null);
+        alert("Session expired or server restarted. Please log in again.");
+        return false;
+      }
+      if (res.ok) {
+        setWebsiteContent(updatedContent);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Failed to update website content:", err);
       return false;
     }
   };
@@ -376,6 +429,46 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
+  // Mark all admin notifications as read
+  const markAdminNotificationsRead = async (): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/school-data/notifications/admin/read", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${adminToken || ""}`
+        }
+      });
+      if (res.ok) {
+        await refreshData();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
+  // Clear all admin notifications
+  const clearAdminNotifications = async (): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/school-data/notifications/admin", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${adminToken || ""}`
+        }
+      });
+      if (res.ok) {
+        await refreshData();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
   // Logout Admin
   const logoutAdmin = async () => {
     try {
@@ -399,11 +492,19 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
         notices,
         drafts,
         fees,
+        monthlyFeeCategories,
+        yearlyFeeCategories,
         admissions,
+        websiteContent,
+        adminNotifications,
+        publicNotifications,
+        markAdminNotificationsRead,
+        clearAdminNotifications,
         loading,
         refreshData,
         updateTicker,
         updateFees,
+        updateWebsiteContent,
         addNotice,
         editNotice,
         deleteNotice,
